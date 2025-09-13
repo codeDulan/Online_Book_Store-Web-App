@@ -19,10 +19,32 @@
   gap: var(--spacing-md);
 }
 
+.auth-header .brand-link {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    text-decoration: none;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.auth-header .brand-link:hover {
+    opacity: 0.8;
+    transform: translateY(-1px);
+}
+
+.auth-header .brand-link:hover .brand-name {
+    color: var(--primary-dark, var(--primary));
+}
+
+.auth-header .brand-link:hover .logo-placeholder {
+    box-shadow: var(--shadow-sm);
+}
+
 .auth-header .logo-placeholder {
   width: 40px;
   height: 40px;
-  background-color: var(--secondary);
+  background-color: var(--white);
   border-radius: var(--radius-lg);
   display: flex;
   align-items: center;
@@ -31,6 +53,7 @@
 
 .auth-header .logo-icon {
   font-size: 20px;
+  margin-top: 20px;
 }
 
 .auth-header .brand-name {
@@ -236,6 +259,23 @@
   border-top: 2px solid var(--white);
   border-radius: 50%;
   animation: spin 1s linear infinite;
+}
+.spinner.hidden {
+    display: none !important;
+}
+
+.spinner {
+    display: none;
+}
+
+/* Only show spinner when loading */
+.auth-btn.loading .spinner {
+    display: inline;
+    animation: spin 1s linear infinite;
+}
+
+.auth-btn.loading .btn-text {
+    display: none;
 }
 
 /* Welcome Section */

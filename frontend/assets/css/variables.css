@@ -1,16 +1,17 @@
 /* CSS Variables for Online Book Store Theme */
 :root {
   /* Color Scheme */
-  --text: #070605;
-  --background: #faf8f5;
-  --primary: #c38c3c;
-  --secondary: #ebc081;
-  --accent: #f8b553;
+  --text: #2D2D2D;
+  --background: #ffffff;
+  --primary: #c5875d;
+  --secondary: #d6ad87;
+  --accent: #E07A5F;
   
   /* Additional Colors */
   --white: #ffffff;
+  --CatCol: #f6ede4;
   --light-gray: #f5f5f5;
-  --gray: #888888;
+  --gray: #646363;
   --dark-gray: #333333;
   --border: #e0e0e0;
   --shadow: rgba(0, 0, 0, 0.1);
@@ -41,6 +42,7 @@
   --spacing-xl: 2rem;
   --spacing-2xl: 3rem;
   --spacing-3xl: 4rem;
+  --spacing-4xl: 2.18rem;
   
   /* Border Radius */
   --radius-sm: 0.25rem;
