@@ -1,0 +1,14 @@
+
+e
+java:S11920"HDefine a constant instead of duplicating this literal "message" 3 times.( Ã®ç8Êý¯¸”3
+{	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(Á…¨¦üÿÿÿÿ8Ìý¯¸”3
+H
+java:S1452&"&Remove usage of generic wildcard type.(ÍÃøýøÿÿÿÿ8öý¯¸”3
+X
+java:S1854<";Remove this useless assignment to local variable "session".(°Ç©Ó8ýý¯¸”3
+C
+java:S14524"&Remove usage of generic wildcard type.(òÈÑó8ýý¯¸”3
+I
+java:S1481<",Remove this unused "session" local variable.(°Ç©Ó8€þ¯¸”3
+H
+java:S1452L"&Remove usage of generic wildcard type.(Î·Š«þÿÿÿÿ8‚þ¯¸”3

@@ -1,3 +1,25 @@
 
 G
 OnlineBookStore/pom.xml,5\7\576ce44e8f9023d85c25030059496866ce4c2b88
+y
+IOnlineBookStore/src/main/java/com/project/OnlineBookStore/model/Role.java,f\8\f862f65f046f8895fa0a3859d8f84fce2041c796
+y
+IOnlineBookStore/src/main/java/com/project/OnlineBookStore/model/User.java,2\f\2fcfe0c072901cb24a4dab2aec4b74dc9492a751
+à
+XOnlineBookStore/src/main/java/com/project/OnlineBookStore/repository/UserRepository.java,f\8\f8778db6cf512daf0e0b8f49c989cac301698acc
+
+OOnlineBookStore/src/main/java/com/project/OnlineBookStore/dto/LoginRequest.java,5\4\543876c45f26006a88d2ee59c2f54541a78cfa75
+Ç
+ROnlineBookStore/src/main/java/com/project/OnlineBookStore/dto/RegisterRequest.java,1\9\1917b23119c4540a1e8bfb543ed6c43c28b8fbe0
+Ñ
+TOnlineBookStore/src/main/java/com/project/OnlineBookStore/config/SecurityConfig.java,b\7\b7859c6196ce4d5a3b056471f65d4673156a8019
+
+OOnlineBookStore/src/main/java/com/project/OnlineBookStore/config/AppConfig.java,9\3\93462952c90e11360bf3a3af5f4acac39474f3b2
+à
+XOnlineBookStore/src/main/java/com/project/OnlineBookStore/controller/AuthController.java,2\3\235108f1d31d7c6429bb2bdd25f8233602cd1c5c
+à
+XOnlineBookStore/src/main/java/com/project/OnlineBookStore/controller/UserController.java,c\a\caa14ef8407cdb461ee2c5010f2f6ddfe0f29606
+É
+SOnlineBookStore/src/main/java/com/project/OnlineBookStore/init/DataInitializer.java,d\8\d864e1fe59b9600d967e388a895a10e22b6fca4a
+è
+_OnlineBookStore/src/main/java/com/project/OnlineBookStore/service/CustomUserDetailsService.java,3\9\39161208097312b9bb6b0ecd79f6ea211a73870a
