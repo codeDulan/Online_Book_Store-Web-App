@@ -34,6 +34,7 @@ public class MaterialService {
         existing.setFaculty(update.getFaculty());
         existing.setStudentYear(update.getStudentYear());
         existing.setCourseModule(update.getCourseModule());
+        existing.setPrice(update.getPrice());
 
         if (file != null && !file.isEmpty()) {
             // remove old file

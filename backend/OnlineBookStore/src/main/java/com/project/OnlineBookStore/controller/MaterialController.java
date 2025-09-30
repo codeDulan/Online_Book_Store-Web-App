@@ -1,8 +1,13 @@
 package com.project.OnlineBookStore.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.project.OnlineBookStore.dto.MaterialDTO;
 import com.project.OnlineBookStore.model.Material;
+import com.project.OnlineBookStore.service.DTOConversionService;
 import com.project.OnlineBookStore.service.MaterialService;
+import com.project.OnlineBookStore.service.PurchaseService;
+import com.project.OnlineBookStore.util.JwtUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.io.PathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.*;
@@ -17,9 +22,16 @@ import java.util.List;
 public class MaterialController {
 
     private final MaterialService materialService;
+    private final PurchaseService purchaseService;
+    private final JwtUtil jwtUtil;
+    private final DTOConversionService dtoConversionService;
 
-    public MaterialController(MaterialService materialService) {
+    public MaterialController(MaterialService materialService, PurchaseService purchaseService, 
+                             JwtUtil jwtUtil, DTOConversionService dtoConversionService) {
         this.materialService = materialService;
+        this.purchaseService = purchaseService;
+        this.jwtUtil = jwtUtil;
+        this.dtoConversionService = dtoConversionService;
     }
 
     // Create — admin only
@@ -77,11 +89,75 @@ public class MaterialController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    // Browse materials with purchase status for users
+    @PreAuthorize("hasRole('USER')")
+    @GetMapping("/api/user/materials")
+    public List<MaterialDTO> browseMaterials(HttpServletRequest request) {
+        List<Material> materials = materialService.listAll();
+        Long userId = extractUserIdFromRequest(request);
+        
+        return materials.stream()
+                .map(material -> {
+                    boolean purchased = purchaseService.hasUserPurchased(userId, material.getId());
+                    return dtoConversionService.convertToMaterialDTO(material, purchased);
+                })
+                .toList();
+    }
+
+    // Get single material with purchase status for users
+    @PreAuthorize("hasRole('USER')")
+    @GetMapping("/api/user/materials/{id}")
+    public ResponseEntity<MaterialDTO> getMaterialForUser(@PathVariable Long id, HttpServletRequest request) {
+        return materialService.findById(id)
+                .map(material -> {
+                    Long userId = extractUserIdFromRequest(request);
+                    boolean purchased = purchaseService.hasUserPurchased(userId, material.getId());
+                    return ResponseEntity.ok(dtoConversionService.convertToMaterialDTO(material, purchased));
+                })
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    // Search materials by university for users
+    @PreAuthorize("hasRole('USER')")
+    @GetMapping("/api/user/materials/search/university/{university}")
+    public List<MaterialDTO> searchByUniversity(@PathVariable String university, HttpServletRequest request) {
+        List<Material> materials = materialService.findByUniversity(university);
+        Long userId = extractUserIdFromRequest(request);
+        
+        return materials.stream()
+                .map(material -> {
+                    boolean purchased = purchaseService.hasUserPurchased(userId, material.getId());
+                    return dtoConversionService.convertToMaterialDTO(material, purchased);
+                })
+                .toList();
+    }
+
+    // Search materials by faculty for users
+    @PreAuthorize("hasRole('USER')")
+    @GetMapping("/api/user/materials/search/faculty/{faculty}")
+    public List<MaterialDTO> searchByFaculty(@PathVariable String faculty, HttpServletRequest request) {
+        List<Material> materials = materialService.findByFaculty(faculty);
+        Long userId = extractUserIdFromRequest(request);
+        
+        return materials.stream()
+                .map(material -> {
+                    boolean purchased = purchaseService.hasUserPurchased(userId, material.getId());
+                    return dtoConversionService.convertToMaterialDTO(material, purchased);
+                })
+                .toList();
+    }
+
     // Download file — accessible to both users and admins
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @GetMapping("/api/materials/{id}/download")
-    public ResponseEntity<Resource> download(@PathVariable Long id) {
+    public ResponseEntity<Resource> download(@PathVariable Long id, HttpServletRequest request) {
         Material m = materialService.findById(id).orElseThrow(() -> new RuntimeException("Material not found"));
+        
+        // Check if user has purchased this material (admins can download without purchase)
+        if (!hasUserRole("ADMIN", request) && !hasUserPurchasedMaterial(id, request)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        
         Path path = materialService.getFilePath(m.getFilename());
         Resource resource = new PathResource(path);
         if (!resource.exists()) {
@@ -93,5 +169,41 @@ public class MaterialController {
         return ResponseEntity.ok()
                 .headers(headers)
                 .body(resource);
+    }
+
+    // Helper method to check if user has a specific role
+    private boolean hasUserRole(String role, HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            String token = authorizationHeader.substring(7);
+            String userRole = jwtUtil.extractRole(token);
+            return ("ROLE_" + role).equals(userRole);
+        }
+        return false;
+    }
+
+    // Helper method to check if user has purchased a material
+    private boolean hasUserPurchasedMaterial(Long materialId, HttpServletRequest request) {
+        try {
+            String authorizationHeader = request.getHeader("Authorization");
+            if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+                String token = authorizationHeader.substring(7);
+                Long userId = jwtUtil.extractUserId(token);
+                return purchaseService.hasUserPurchased(userId, materialId);
+            }
+            return false;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    // Helper method to extract user ID from JWT token in request header
+    private Long extractUserIdFromRequest(HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            String token = authorizationHeader.substring(7);
+            return jwtUtil.extractUserId(token);
+        }
+        throw new RuntimeException("No valid JWT token found in request");
     }
 }
