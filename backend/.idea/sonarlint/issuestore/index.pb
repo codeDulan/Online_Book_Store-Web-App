@@ -23,3 +23,15 @@ XOnlineBookStore/src/main/java/com/project/OnlineBookStore/controller/UserContro
 SOnlineBookStore/src/main/java/com/project/OnlineBookStore/init/DataInitializer.java,d\8\d864e1fe59b9600d967e388a895a10e22b6fca4a
 è
 _OnlineBookStore/src/main/java/com/project/OnlineBookStore/service/CustomUserDetailsService.java,3\9\39161208097312b9bb6b0ecd79f6ea211a73870a
+ç
+]OnlineBookStore/src/main/java/com/project/OnlineBookStore/config/JwtAuthenticationFilter.java,c\7\c7d30cf1d3af13afcce8335cae6579e3238d8133
+â
+YOnlineBookStore/src/main/java/com/project/OnlineBookStore/service/FileStorageService.java,8\a\8a9b9c509f967528a23183b315227b4446d234a0
+}
+MOnlineBookStore/src/main/java/com/project/OnlineBookStore/model/Material.java,7\6\768ba9a4002986fac9f3a0545a20dd0215465b0c
+å
+\OnlineBookStore/src/main/java/com/project/OnlineBookStore/repository/MaterialRepository.java,a\8\a8c69da68e60f0ff4820e96fb86172e400dc2df7
+Ü
+VOnlineBookStore/src/main/java/com/project/OnlineBookStore/service/MaterialService.java,5\d\5dc7375a0ca9565dfff2d009aa8515ed91c9d8e8
+å
+\OnlineBookStore/src/main/java/com/project/OnlineBookStore/controller/MaterialController.java,d\9\d9320fa20c1ac3023214efa046a752fcbfd55017

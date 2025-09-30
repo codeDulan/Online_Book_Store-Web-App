@@ -1,0 +1,9 @@
+
+g	java:S112"FDefine and throw a dedicated exception instead of using a generic one.(úÿÜ‹ÿÿÿÿÿ8ÂÒİ˜3
+g	java:S112"FDefine and throw a dedicated exception instead of using a generic one.(…âÒ‰üÿÿÿÿ8ÂÒİ˜3
+g	java:S112#"FDefine and throw a dedicated exception instead of using a generic one.(¼€èşÿÿÿÿ8ÂÒİ˜3
+b	java:S112,"FDefine and throw a dedicated exception instead of using a generic one.(ã„“Ü8ÂÒİ˜3
+a	java:S1129"FDefine and throw a dedicated exception instead of using a generic one.(–Ú8’ÂÒİ˜3
+o	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(€Ëôˆ
+²
+java:S4449"Annotate the parameter with @javax.annotation.Nullable in method 'cleanPath' declaration, or make sure that null can not be passed as argument.(Ÿ”¥áùÿÿÿÿ8±ÂÒİ˜3
