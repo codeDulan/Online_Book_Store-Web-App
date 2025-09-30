@@ -1,6 +1,5 @@
-package com.project.OnlineBookStore.model;
+package com.project.OnlineBookStore.dto;
 
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,35 +7,18 @@ import lombok.Setter;
 
 import java.time.Instant;
 
-@Entity
-@Table(name = "materials")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-public class Material {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class MaterialDTO {
     private Long id;
-
     private String title;
     private String university;
     private String faculty;
-
-    // e.g., 1, 2, 3, 4
     private Integer studentYear;
-
     private String courseModule;
-
-    // stored filename on disk
-    private String filename;
-
-    // price of the material
-    @Column(nullable = false)
     private Double price;
-
     private Instant uploadedAt;
-
+    private Boolean purchased; // Whether current user has purchased this material
 }
-

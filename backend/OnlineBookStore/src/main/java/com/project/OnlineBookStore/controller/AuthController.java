@@ -60,12 +60,12 @@ public class AuthController {
                     new UsernamePasswordAuthenticationToken(req.getEmail(), req.getPassword());
             Authentication auth = authenticationManager.authenticate(authToken);
 
-            // Generate JWT token
-            UserDetails userDetails = (UserDetails) auth.getPrincipal();
-            String jwt = jwtUtil.generateToken(userDetails);
-
             // Get user info
             User u = userRepository.findByEmail(req.getEmail()).orElseThrow();
+
+            // Generate JWT token with user ID
+            UserDetails userDetails = (UserDetails) auth.getPrincipal();
+            String jwt = jwtUtil.generateToken(userDetails, u.getId());
 
             return ResponseEntity.ok(Map.of(
                     "message", "Login successful",
