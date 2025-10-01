@@ -22,7 +22,8 @@ This document provides a comprehensive overview of the file structure for the On
 ├── 📄 .gitattributes             # Git attributes configuration
 ├── 📁 .mvn/                      # Maven wrapper configuration directory
 ├── 📁 src/                       # Source code directory
-└── 📁 target/                    # Maven build output directory (compiled classes, JARs)
+├── 📁 target/                    # Maven build output directory (compiled classes, JARs)
+└── 📁 uploads/                   # Uploaded files are saved here
 ```
 
 ### 📁 src/main/java/com/project/OnlineBookStore/
@@ -31,28 +32,47 @@ This document provides a comprehensive overview of the file structure for the On
 ├── 📄 OnlineBookStoreApplication.java    # Spring Boot main application class with @SpringBootApplication
 ├── 📁 config/                            # Configuration classes directory
 │   ├── 📄 AppConfig.java                 # General application configuration (CORS, beans)
+│   ├── 📄 GlobalExceptionHandler.java    # Global exception handling and error responses
+│   ├── 📄 JwtAuthenticationFilter.java   # JWT token authentication filter for requests
 │   └── 📄 SecurityConfig.java            # Spring Security configuration (authentication, authorization)
 ├── 📁 controller/                        # REST API controllers directory
 │   ├── 📄 AuthController.java            # Authentication endpoints (login, register, logout)
+│   ├── 📄 MaterialController.java        # Book/material management endpoints (CRUD operations)
+│   ├── 📄 PurchaseController.java        # Purchase/order management endpoints (buy, history)
 │   └── 📄 UserController.java            # User management endpoints (profile, user operations)
 ├── 📁 dto/                               # Data Transfer Objects directory
 │   ├── 📄 LoginRequest.java              # DTO for login request payload
+│   ├── 📄 MaterialDTO.java               # DTO for material/book data transfer
+│   ├── 📄 PurchaseDTO.java               # DTO for purchase/order data transfer
 │   └── 📄 RegisterRequest.java           # DTO for user registration payload
+├── 📁 example/                           # Example usage and demonstration directory
+│   └── 📄 PurchaseAPIUsageExample.java   # Example code demonstrating Purchase API usage
 ├── 📁 init/                              # Application initialization directory
 │   └── 📄 DataInitializer.java           # Database initialization and default data setup
 ├── 📁 model/                             # JPA entity classes directory
+│   ├── 📄 Material.java                  # Material/book entity with JPA annotations
+│   ├── 📄 Purchase.java                  # Purchase/order entity with JPA annotations
+│   ├── 📄 PurchaseStatus.java            # Enum for purchase status (PENDING, COMPLETED, etc.)
 │   ├── 📄 Role.java                      # Enum for user roles (USER, ADMIN)
 │   └── 📄 User.java                      # User entity with JPA annotations
 ├── 📁 repository/                        # Data access layer directory
+│   ├── 📄 MaterialRepository.java        # JPA repository interface for Material operations
+│   ├── 📄 PurchaseRepository.java        # JPA repository interface for Purchase operations
 │   └── 📄 UserRepository.java            # JPA repository interface for User operations
-└── 📁 service/                           # Business logic layer directory
-    └── 📄 CustomUserDetailsService.java  # Spring Security UserDetailsService implementation
+├── 📁 service/                           # Business logic layer directory
+│   ├── 📄 CustomUserDetailsService.java  # Spring Security UserDetailsService implementation
+│   ├── 📄 DTOConversionService.java      # Service for converting between DTOs and entities
+│   ├── 📄 FileStorageService.java        # Service for file upload/storage operations
+│   ├── 📄 MaterialService.java           # Business logic for material/book operations
+│   └── 📄 PurchaseService.java           # Business logic for purchase/order operations
+└── 📁 util/                              # Utility classes directory
+    └── 📄 JwtUtil.java                   # JWT token utility methods (generation, validation)
 ```
 
 ### 📁 src/main/resources/
 ```
 📦 Application Resources
-└── 📄 application.properties    # Spring Boot configuration (database, server settings)
+└── 📄 application.properties    # Spring Boot configuration (database, server, file settings)
 ```
 
 ### 📁 src/test/java/com/project/OnlineBookStore/

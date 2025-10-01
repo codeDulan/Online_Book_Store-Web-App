@@ -156,8 +156,14 @@ async function handleLogin(event) {
             // Login successful
             showSuccess('login', 'Login successful! Redirecting...');
             
-            // Store user data in sessionStorage
-            sessionStorage.setItem('user', JSON.stringify(data));
+            // Store user data and JWT token separately in sessionStorage
+            const userData = {
+                email: data.email,
+                fullName: data.fullName,
+                role: data.role
+            };
+            sessionStorage.setItem('user', JSON.stringify(userData));
+            sessionStorage.setItem('authToken', data.token);
             
             // Redirect to homepage after short delay
             setTimeout(() => {
@@ -166,7 +172,8 @@ async function handleLogin(event) {
             
         } else {
             // Login failed
-            showError('login', data.message || 'Login failed. Please check your credentials.');
+            const errorMessage = data.error || data.message || 'Login failed. Please check your credentials.';
+            showError('login', errorMessage);
         }
 
     } catch (error) {
@@ -463,10 +470,130 @@ function setLoadingState(formType, isLoading) {
  */
 function checkAuthStatus() {
     const user = sessionStorage.getItem('user');
-    if (user) {
-        // User is already logged in, redirect to homepage
-        window.location.href = '../index.html';
+    const token = sessionStorage.getItem('authToken');
+    
+    if (user && token) {
+        // Check if token is still valid (basic check)
+        if (isTokenValid(token)) {
+            // User is already logged in, redirect to homepage
+            window.location.href = '../index.html';
+        } else {
+            // Token expired, clear session data
+            clearAuthData();
+        }
     }
+}
+
+/**
+ * JWT Token Utility Functions
+ */
+
+/**
+ * Get the stored JWT token
+ * @returns {string|null} - JWT token or null if not found
+ */
+function getAuthToken() {
+    return sessionStorage.getItem('authToken');
+}
+
+/**
+ * Get authorization headers for API calls
+ * @returns {Object} - Headers object with Authorization header
+ */
+function getAuthHeaders() {
+    const token = getAuthToken();
+    const headers = {
+        'Content-Type': 'application/json'
+    };
+    
+    if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+    }
+    
+    return headers;
+}
+
+/**
+ * Check if JWT token is valid (basic client-side check)
+ * @param {string} token - JWT token to check
+ * @returns {boolean} - Whether token appears valid
+ */
+function isTokenValid(token) {
+    if (!token) return false;
+    
+    try {
+        // Basic JWT structure check (header.payload.signature)
+        const parts = token.split('.');
+        if (parts.length !== 3) return false;
+        
+        // Decode payload to check expiration
+        const payload = JSON.parse(atob(parts[1]));
+        const currentTime = Math.floor(Date.now() / 1000);
+        
+        // Check if token is expired
+        return payload.exp && payload.exp > currentTime;
+    } catch (error) {
+        console.error('Error validating token:', error);
+        return false;
+    }
+}
+
+/**
+ * Clear all authentication data
+ */
+function clearAuthData() {
+    sessionStorage.removeItem('user');
+    sessionStorage.removeItem('authToken');
+}
+
+/**
+ * Get current user data
+ * @returns {Object|null} - User data or null if not logged in
+ */
+function getCurrentUser() {
+    const userData = sessionStorage.getItem('user');
+    const token = sessionStorage.getItem('authToken');
+    
+    if (userData && token && isTokenValid(token)) {
+        try {
+            return JSON.parse(userData);
+        } catch (error) {
+            console.error('Error parsing user data:', error);
+            clearAuthData();
+            return null;
+        }
+    }
+    
+    return null;
+}
+
+/**
+ * Make an authenticated API request
+ * @param {string} url - API endpoint URL
+ * @param {Object} options - Fetch options
+ * @returns {Promise} - Fetch promise
+ */
+async function authenticatedFetch(url, options = {}) {
+    const headers = getAuthHeaders();
+    
+    const config = {
+        ...options,
+        headers: {
+            ...headers,
+            ...(options.headers || {})
+        }
+    };
+    
+    const response = await fetch(url, config);
+    
+    // Handle token expiration
+    if (response.status === 401) {
+        clearAuthData();
+        window.location.href = 'pages/login.html';
+        return;
+    }
+    
+    return response;
 }
 
 /**
@@ -474,8 +601,13 @@ function checkAuthStatus() {
  */
 async function logout() {
     try {
+        const token = sessionStorage.getItem('authToken');
         await fetch(API_ENDPOINTS.LOGOUT, {
             method: 'POST',
+            headers: {
+                'Authorization': token ? `Bearer ${token}` : '',
+                'Content-Type': 'application/json'
+            },
             credentials: 'include'
         });
     } catch (error) {
@@ -483,6 +615,7 @@ async function logout() {
     } finally {
         // Clear session data regardless of API response
         sessionStorage.removeItem('user');
+        sessionStorage.removeItem('authToken');
         window.location.href = '../index.html';
     }
 }
@@ -492,6 +625,23 @@ if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
         logout,
         checkAuthStatus,
-        API_ENDPOINTS
+        API_ENDPOINTS,
+        getAuthToken,
+        getAuthHeaders,
+        getCurrentUser,
+        authenticatedFetch,
+        clearAuthData
     };
 }
+
+// Make functions available globally for other scripts
+window.AuthUtils = {
+    logout,
+    checkAuthStatus,
+    getAuthToken,
+    getAuthHeaders,
+    getCurrentUser,
+    authenticatedFetch,
+    clearAuthData,
+    API_ENDPOINTS
+};
