@@ -210,15 +210,20 @@ function initializeBookInteractions() {
  */
 function checkUserSession() {
     const userData = sessionStorage.getItem('user');
-    // console.log(userData);
     const token = sessionStorage.getItem('authToken');
-    // console.log(token);
 
     if (userData && token) {
         try {
             // Validate JWT token
             if (isTokenValid(token)) {
                 currentUser = JSON.parse(userData);
+                
+                // Check if user should be redirected to their dashboard
+                if (shouldRedirectToDashboard()) {
+                    redirectBasedOnRole(currentUser.role);
+                    return;
+                }
+                
                 updateUIForLoggedInUser();
             } else {
                 // Token expired, clear session data
@@ -232,6 +237,32 @@ function checkUserSession() {
             currentUser = null;
         }
     }
+}
+
+/**
+ * Check if user should be redirected to their dashboard
+ * @returns {boolean} - Whether to redirect to dashboard
+ */
+function shouldRedirectToDashboard() {
+    // Check if we're on the homepage and user is logged in
+    const currentPath = window.location.pathname;
+    const isHomepage = currentPath.endsWith('index.html') || currentPath.endsWith('/');
+    
+    // Only redirect from homepage, not from login page or other pages
+    return isHomepage && currentUser && currentUser.role;
+}
+
+/**
+ * Redirect user based on their role
+ * @param {string} role - User role (ROLE_ADMIN or ROLE_USER)
+ */
+function redirectBasedOnRole(role) {
+    if (role === 'ROLE_ADMIN') {
+        window.location.href = 'pages/dashboards/admin.html';
+    } else if (role === 'ROLE_USER') {
+        window.location.href = 'pages/dashboards/user.html';
+    }
+    // If role is unknown, stay on current page
 }
 
 /**
@@ -436,10 +467,17 @@ function createUserMenu() {
     const userMenu = document.createElement('div');
     userMenu.className = 'user-menu';
     // Create menu items based on user role
-    const menuItems = [
-        '<a href="#" class="dropdown-item" id="profileLink">Profile</a>',
-        '<a href="#" class="dropdown-item" id="purchasesLink">My Purchases</a>'
-    ];
+    const menuItems = [];
+    
+    // Add dashboard link for all users
+    if (currentUser.role === 'ROLE_ADMIN') {
+        menuItems.push('<a href="pages/dashboards/admin.html" class="dropdown-item">Admin Dashboard</a>');
+    } else if (currentUser.role === 'ROLE_USER') {
+        menuItems.push('<a href="pages/dashboards/user.html" class="dropdown-item">My Dashboard</a>');
+    }
+    
+    menuItems.push('<a href="#" class="dropdown-item" id="profileLink">Profile</a>');
+    menuItems.push('<a href="#" class="dropdown-item" id="purchasesLink">My Purchases</a>');
     
     // Add admin-only items for admin users
     if (currentUser.role === 'ROLE_ADMIN') {

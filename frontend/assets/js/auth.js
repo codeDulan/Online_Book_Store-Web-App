@@ -165,9 +165,9 @@ async function handleLogin(event) {
             sessionStorage.setItem('user', JSON.stringify(userData));
             sessionStorage.setItem('authToken', data.token);
             
-            // Redirect to homepage after short delay
+            // Role-based redirection after short delay
             setTimeout(() => {
-                window.location.href = '../index.html';
+                redirectBasedOnRole(userData.role);
             }, 1500);
             
         } else {
@@ -473,14 +473,37 @@ function checkAuthStatus() {
     const token = sessionStorage.getItem('authToken');
     
     if (user && token) {
-        // Check if token is still valid (basic check)
-        if (isTokenValid(token)) {
-            // User is already logged in, redirect to homepage
-            window.location.href = '../index.html';
-        } else {
-            // Token expired, clear session data
+        try {
+            const userData = JSON.parse(user);
+            // Check if token is still valid (basic check)
+            if (isTokenValid(token)) {
+                // User is already logged in, redirect based on role
+                redirectBasedOnRole(userData.role);
+            } else {
+                // Token expired, clear session data
+                clearAuthData();
+            }
+        } catch (error) {
+            console.error('Error parsing user data:', error);
             clearAuthData();
         }
+    }
+}
+
+/**
+ * Redirect user based on their role
+ * @param {string} role - User role (ROLE_ADMIN or ROLE_USER)
+ */
+function redirectBasedOnRole(role) {
+    const baseUrl = window.location.origin;
+    const basePath = window.location.pathname.includes('/frontend/') ? '/frontend/' : '/';
+
+    if (role === 'ROLE_ADMIN') {
+        window.location.href = `${basePath}pages/dashboards/admin.html`;
+    } else if (role === 'ROLE_USER') {
+        window.location.href = `${basePath}pages/dashboards/user.html`;
+    } else {
+        window.location.href = `${basePath}index.html`;
     }
 }
 
@@ -643,5 +666,6 @@ window.AuthUtils = {
     getCurrentUser,
     authenticatedFetch,
     clearAuthData,
+    redirectBasedOnRole,
     API_ENDPOINTS
 };
