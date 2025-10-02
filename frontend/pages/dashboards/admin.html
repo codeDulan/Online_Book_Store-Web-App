@@ -54,8 +54,19 @@
             </div>
 
             <!-- Materials Section -->
-            <div class="content-placeholder">
-
+            <div class="materials-section">
+                <!-- Materials List Container -->
+                <div class="materials-container" id="materialsContainer">
+                    <div class="loading-message" id="loadingMessage">Loading materials...</div>
+                    <div class="error-message hidden" id="errorMessage">
+                        Failed to load materials. Please try again.
+                    </div>
+                    
+                    <!-- Materials List -->
+                    <div class="materials-list hidden" id="materialsList">
+                        <!-- Materials will be populated by JavaScript -->
+                    </div>
+                </div>
             </div>
         </div>
     </main>
