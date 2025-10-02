@@ -477,8 +477,16 @@ function checkAuthStatus() {
             const userData = JSON.parse(user);
             // Check if token is still valid (basic check)
             if (isTokenValid(token)) {
-                // User is already logged in, redirect based on role
-                redirectBasedOnRole(userData.role);
+                // Check if user is already on the correct page for their role
+                const currentPath = window.location.pathname;
+                const isOnCorrectDashboard = (userData.role === 'ROLE_ADMIN' && currentPath.includes('/dashboards/admin.html')) ||
+                                             (userData.role === 'ROLE_USER' && currentPath.includes('/dashboards/user.html'));
+                
+                // Only redirect if user is NOT already on their correct dashboard
+                if (!isOnCorrectDashboard) {
+                    // User is already logged in but on wrong page, redirect based on role
+                    redirectBasedOnRole(userData.role);
+                }
             } else {
                 // Token expired, clear session data
                 clearAuthData();
@@ -625,21 +633,48 @@ async function authenticatedFetch(url, options = {}) {
 async function logout() {
     try {
         const token = sessionStorage.getItem('authToken');
+
+        // Call logout API
         await fetch(API_ENDPOINTS.LOGOUT, {
             method: 'POST',
             headers: {
                 'Authorization': token ? `Bearer ${token}` : '',
                 'Content-Type': 'application/json'
-            },
-            credentials: 'include'
+            }
         });
+
+        // Clear session data
+        clearAuthData();
+        
+        // Redirect based on current location
+        const currentPath = window.location.pathname;
+
+        if (currentPath.includes('/pages/dashboards/')) {
+            // From dashboard pages, go back to root index
+            window.location.href = '../../index.html';
+        } else if (currentPath.includes('/pages/')) {
+            // From other pages directory, go up one level
+            window.location.href = '../index.html';
+        } else {
+            // From root directory
+            window.location.href = './index.html';
+        }
+
     } catch (error) {
         console.error('Logout error:', error);
     } finally {
-        // Clear session data regardless of API response
-        sessionStorage.removeItem('user');
-        sessionStorage.removeItem('authToken');
-        window.location.href = '../index.html';
+        // Clear session data regardless of API response and redirect
+        clearAuthData();
+
+        // Use the same logic
+        const currentPath = window.location.pathname;
+        if (currentPath.includes('/pages/dashboards/')) {
+            window.location.href = '../../index.html';
+        } else if (currentPath.includes('/pages/')) {
+            window.location.href = '../index.html';
+        } else {
+            window.location.href = './index.html';
+        }
     }
 }
 

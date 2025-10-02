@@ -8,9 +8,9 @@ let currentAdminUser = null;
 
 // Initialize admin dashboard
 document.addEventListener('DOMContentLoaded', function() {
+    validateAdminAccess();
     initializeAdminDashboard();
     setupAdminEventListeners();
-    validateAdminAccess();
 });
 
 /**
@@ -71,37 +71,28 @@ function validateAdminAccess() {
  */
 function initializeUserMenu() {
     const userMenuContainer = document.getElementById('adminUserMenu');
-    
     if (currentAdminUser && userMenuContainer) {
-        const userMenu = createAdminUserMenu();
-        userMenuContainer.innerHTML = '';
-        userMenuContainer.appendChild(userMenu);
+        pupulateAdminUserMenu(userMenuContainer);
     }
 }
 
 /**
- * Create admin user menu for logged-in admin
- * @returns {HTMLElement} User menu element
+ * Populate admin user menu directly in the existing container
+ * @param {HTMLElement} container - The adminUserMenu container element
  */
-function createAdminUserMenu() {
-    const userMenu = document.createElement('div');
-    userMenu.className = 'user-menu';
-    
+function pupulateAdminUserMenu(container) {
     // Create menu items for admin
     const menuItems = [
         '<a href="#" class="dropdown-item" id="adminProfileLink">Profile</a>',
-        '<a href="#" class="dropdown-item" id="adminSettingsLink">Settings</a>',
-        '<a href="../../index.html" class="dropdown-item">Back to Site</a>',
+        '<a href="#" class="dropdown-item" id="adminPurchasesLink">Purchases</a>', // This should be implemented
         '<a href="#" class="dropdown-item" id="adminLogoutLink">Logout</a>'
     ];
     
-    userMenu.innerHTML = `
+    container.innerHTML = `
         <div class="user-info">
-            <span class="user-name">Admin: ${currentAdminUser.fullName}</span>
-            <span class="user-role">Administrator</span>
             <div class="user-dropdown">
                 <button class="btn btn-outline" id="adminMenuBtn">
-                    Account ▼
+                    <span class="user-role">Administrator ▼</span>
                 </button>
                 <div class="dropdown-menu" id="adminDropdown">
                     ${menuItems.join('')}
@@ -110,78 +101,10 @@ function createAdminUserMenu() {
         </div>
     `;
 
-    // Add styles for admin user menu
-    const style = document.createElement('style');
-    style.textContent = `
-        .user-menu {
-            position: relative;
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-md);
-        }
-        
-        .user-name {
-            font-size: var(--font-size-small);
-            color: var(--text);
-            font-weight: var(--font-weight-medium);
-            margin-right: var(--spacing-xs);
-        }
-        
-        .user-role {
-            font-size: var(--font-size-xs);
-            color: var(--primary);
-            background-color: var(--primary-light, #e3f2fd);
-            padding: 2px 6px;
-            border-radius: var(--radius-sm);
-            font-weight: var(--font-weight-medium);
-            margin-right: var(--spacing-sm);
-        }
-        
-        .user-dropdown {
-            position: relative;
-        }
-        
-        .dropdown-menu {
-            position: absolute;
-            top: 100%;
-            right: 0;
-            background: var(--white);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-md);
-            box-shadow: var(--shadow-lg);
-            min-width: 150px;
-            display: none;
-            z-index: 1000;
-        }
-        
-        .dropdown-menu.show {
-            display: block;
-        }
-        
-        .dropdown-item {
-            display: block;
-            padding: var(--spacing-sm) var(--spacing-md);
-            color: var(--text);
-            text-decoration: none;
-            transition: background-color var(--transition-fast);
-        }
-        
-        .dropdown-item:hover {
-            background-color: var(--light-gray);
-        }
-    `;
-    
-    if (!document.getElementById('adminUserMenuStyles')) {
-        style.id = 'adminUserMenuStyles';
-        document.head.appendChild(style);
-    }
-
     // Add event listeners after a short delay to ensure DOM is ready
     setTimeout(() => {
         setupUserMenuEvents();
     }, 0);
-
-    return userMenu;
 }
 
 /**
@@ -249,13 +172,13 @@ async function handleAdminLogout() {
             });
             
             clearAuthData();
-            window.location.href = '../login.html';
+            window.location.href = '../../login.html';
         }
     } catch (error) {
         console.error('Logout error:', error);
         // Clear data and redirect anyway
         clearAuthData();
-        window.location.href = '../login.html';
+        window.location.href = '../../login.html';
     }
 }
 

@@ -1,15 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - EDURA Online Book Store</title>
-    
+
     <!-- Stylesheets -->
     <link rel="stylesheet" href="../../assets/css/variables.css">
     <link rel="stylesheet" href="../../assets/css/base.css">
     <link rel="stylesheet" href="../../assets/css/dashboard.css">
 </head>
+
 <body>
     <!-- Header Section -->
     <header class="header">
@@ -17,10 +19,8 @@
             <div class="header-content">
                 <!-- Logo and Brand Name -->
                 <div class="brand">
-                    <a href="../../index.html" class="brand-link">
-                        <img src="../../assets/images/logo.png" alt="EDURA Logo" class="brand-logo">
-                        <h1 class="brand-name">EDURA</h1>
-                    </a>
+                    <img src="../../assets/images/logo.png" alt="EDURA Logo" class="brand-logo">
+                    <h1 class="brand-name">EDURA</h1>
                 </div>
 
                 <!-- User Menu -->
@@ -38,11 +38,14 @@
         <div class="container">
             <!-- Dashboard Header -->
             <div class="dashboard-header">
-                <div class="dashboard-title">
-                    <h2>Admin Dashboard</h2>
-                    <p class="dashboard-subtitle">Manage your online book store</p>
-                </div>
                 <div class="dashboard-actions">
+                    <div class="search-box">
+                        <label for="search-bar" class="search-label">Search Materials :</label>
+                        <input type="text" id="search-bar" placeholder="Search materials..."
+                            aria-label="Search materials">
+                        <button class="search-btn">🔍</button>
+
+                    </div>
                     <button class="btn btn-primary" id="addMaterialBtn">
                         <span class="btn-icon">+</span>
                         Add Material
@@ -50,26 +53,10 @@
                 </div>
             </div>
 
-            <!-- Dashboard Content Sections -->
             <!-- Materials Section -->
-            <section id="materials" class="dashboard-section">
-                <div class="section-header">
-                    <h3>Materials Management</h3>
-                    <p>Add, edit, and manage learning materials</p>
-                </div>
-                
-                <div class="content-placeholder">
-                    <div class="placeholder-icon">📖</div>
-                    <h4>Materials Management</h4>
-                    <p>This section will contain:</p>
-                    <ul>
-                        <li>Materials list with search and filter</li>
-                        <li>Add/Edit material forms</li>
-                        <li>File upload functionality</li>
-                        <li>Material categories and pricing</li>
-                    </ul>
-                </div>
-            </section>
+            <div class="content-placeholder">
+
+            </div>
         </div>
     </main>
 
@@ -91,4 +78,5 @@
     <script src="../../assets/js/auth.js"></script>
     <script src="../../assets/js/admin-dashboard.js"></script>
 </body>
+
 </html>
