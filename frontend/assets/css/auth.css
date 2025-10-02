@@ -1,39 +1,27 @@
 /* Authentication Page Styles */
 
-/* Auth Header */
-.auth-header {
-  background-color: var(--white);
-  box-shadow: var(--shadow-sm);
-  padding: var(--spacing-md) 0;
-}
-
-.auth-header .header-content {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.auth-header .brand {
+/* Header */
+.brand {
   display: flex;
   align-items: center;
   gap: var(--spacing-md);
 }
 
-.auth-header .brand-link {
+.brand-link {
     display: flex;
     align-items: center;
     gap: var(--spacing-md);
     cursor: pointer;
 }
 
-.auth-header .brand-logo {
+.brand-logo {
   width: 50px;
   height: 48px;
   object-fit: contain;
   display: block;
 }
 
-.auth-header .brand-name {
+.brand-name {
   font-size: var(--font-size-2xl);
   font-weight: var(--font-weight-bold);
   color: var(--primary);
