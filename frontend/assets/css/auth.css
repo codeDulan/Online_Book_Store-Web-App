@@ -29,9 +29,7 @@
 }
 
 /* Main Auth Content */
-.auth-main {
-  min-height: calc(100vh - var(--header-height) - 100px);
-  padding: var(--spacing-2xl) 0;
+.main {
   background: linear-gradient(135deg, var(--background) 0%, var(--secondary) 100%);
 }
 

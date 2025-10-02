@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - EDURA Online Book Store</title>
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="../../assets/css/variables.css">
+    <link rel="stylesheet" href="../../assets/css/base.css">
+    <link rel="stylesheet" href="../../assets/css/dashboard.css">
+</head>
+<body>
+    <!-- Header Section -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <!-- Logo and Brand Name -->
+                <div class="brand">
+                    <a href="../../index.html" class="brand-link">
+                        <img src="../../assets/images/logo.png" alt="EDURA Logo" class="brand-logo">
+                        <h1 class="brand-name">EDURA</h1>
+                    </a>
+                </div>
+
+                <!-- User Menu -->
+                <div class="header-actions">
+                    <div class="user-menu" id="adminUserMenu">
+                        <!-- User menu will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Dashboard Content -->
+    <main class="main">
+        <div class="container">
+            <!-- Dashboard Header -->
+            <div class="dashboard-header">
+                <div class="dashboard-title">
+                    <h2>Admin Dashboard</h2>
+                    <p class="dashboard-subtitle">Manage your online book store</p>
+                </div>
+                <div class="dashboard-actions">
+                    <button class="btn btn-primary" id="addMaterialBtn">
+                        <span class="btn-icon">+</span>
+                        Add Material
+                    </button>
+                </div>
+            </div>
+
+            <!-- Dashboard Content Sections -->
+            <!-- Materials Section -->
+            <section id="materials" class="dashboard-section">
+                <div class="section-header">
+                    <h3>Materials Management</h3>
+                    <p>Add, edit, and manage learning materials</p>
+                </div>
+                
+                <div class="content-placeholder">
+                    <div class="placeholder-icon">📖</div>
+                    <h4>Materials Management</h4>
+                    <p>This section will contain:</p>
+                    <ul>
+                        <li>Materials list with search and filter</li>
+                        <li>Add/Edit material forms</li>
+                        <li>File upload functionality</li>
+                        <li>Material categories and pricing</li>
+                    </ul>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <p>&copy; 2024 EDURA Online Book Store. All rights reserved.</p>
+                <div class="footer-links">
+                    <a href="#" class="footer-link">Help</a>
+                    <a href="#" class="footer-link">Support</a>
+                    <a href="#" class="footer-link">Terms</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="../../assets/js/auth.js"></script>
+    <script src="../../assets/js/admin-dashboard.js"></script>
+</body>
+</html>
