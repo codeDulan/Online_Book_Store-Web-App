@@ -1,6 +1,6 @@
 /* Base Styles for Online Book Store */
 
-/* Reset and Base Styles */
+/* Base Styles */
 * {
   margin: 0;
   padding: 0;
@@ -36,7 +36,12 @@ header {
   align-items: center;
   justify-content: space-between;
   height: 100%;
-  /* padding: 0 var(--container-padding); */
+}
+
+.footer {
+  background-color: var(--white);
+  border-top: 1px solid var(--border);
+  padding: var(--spacing-sm) 0;
 }
 
 /* Typography */
