@@ -279,6 +279,133 @@
     font-weight: var(--font-weight-normal);
 }
 
+/* Add Material Modal Styles */
+.add-modal-container {
+    width: 90vw;
+    max-width: 600px;
+    height: auto;
+    max-height: 850px;
+    display: block;
+    overflow-y: auto;
+}
+
+.add-material-form {
+    padding: var(--spacing-lg) var(--spacing-2xl);
+}
+
+.form-header {
+    text-align: center;
+    margin-bottom: var(--spacing-sm);
+    padding-top: var(--spacing-sm);
+}
+
+.form-header h2 {
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--text);
+    margin-bottom: var(--spacing-xs);
+}
+
+.form-header p {
+    color: var(--gray);
+    margin: 0;
+}
+
+.form-group {
+    margin-bottom: var(--spacing-sm);
+}
+
+.form-group label {
+    display: block;
+    font-size: var(--font-size-small);
+    font-weight: var(--font-weight-semibold);
+    color: var(--gray);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: var(--spacing-xs);
+}
+
+.form-group .required-star {
+    color: var(--error);
+}
+
+.form-group input {
+    width: 100%;
+    padding: var(--spacing-sm);
+    border: 2px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-base);
+    font-family: inherit;
+    color: var(--text);
+    background-color: var(--white);
+    transition: border-color var(--transition-fast);
+    box-sizing: border-box;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--gray);
+}
+
+.form-group input.required:invalid {
+    border-color: var(--accent);
+}
+
+.form-group .form-error-message {
+    color: var(--error);
+    font-size: var(--font-size-small);
+    display: none;
+}
+
+/* File Upload Styling for Add Form */
+.add-file-upload {
+    border: 2px dashed var(--border);
+    border-radius: var(--radius-sm);
+    padding: var(--spacing-sm) var(--spacing-lg);
+    text-align: center;
+    background-color: var(--light-gray);
+    transition: all var(--transition-fast);
+}
+
+.add-file-upload.dragover {
+    border-color: var(--primary);
+    background-color: rgba(197, 135, 93, 0.1);
+}
+
+.add-file-upload.has-file {
+    border-color: var(--success);
+    background-color: rgba(76, 175, 80, 0.1);
+}
+
+.file-upload-area {
+    cursor: pointer;
+}
+
+.file-upload-icon {
+    font-size: 2rem;
+    margin-bottom: var(--spacing-sm);
+    color: var(--gray);
+}
+
+.file-upload-text {
+    color: var(--gray);
+    margin-bottom: var(--spacing-sm);
+}
+
+.file-selected-text {
+    color: var(--success);
+    font-weight: var(--font-weight-medium);
+}
+
+.form-actions {
+    display: flex;
+    gap: var(--spacing-md);
+}
+
+.form-actions .btn {
+    flex: 1;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .modal-container {
@@ -301,6 +428,19 @@
     .modal-actions {
         flex-direction: column;
     }
+    
+    .add-modal-container {
+        width: 95vw;
+        height: 90vh;
+    }
+    
+    .add-material-form {
+        padding: var(--spacing-lg);
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
 }
 
 @media (max-width: 480px) {
@@ -312,6 +452,12 @@
     
     .modal-left,
     .modal-right {
+        border-radius: 0;
+    }
+    
+    .add-modal-container {
+        width: 100vw;
+        height: 100vh;
         border-radius: 0;
     }
 }

@@ -18,8 +18,47 @@ document.addEventListener('DOMContentLoaded', function () {
  */
 function initializeAdminDashboard() {
     initializeUserMenu();
+    initializeAddMaterialModal();
     loadMaterials();
     console.log('Admin dashboard initialized');
+}
+
+/**
+ * Initialize add material modal functionality
+ */
+function initializeAddMaterialModal() {
+    const addMaterialBtn = document.getElementById('addMaterialBtn');
+    const addMaterialModal = document.getElementById('addMaterialModal');
+    const addModalClose = document.getElementById('addModalClose');
+    const clearBtn = document.getElementById('clearBtn');
+    const addMaterialFormBtn = document.getElementById('addMaterialFormBtn');
+    
+    if (addMaterialBtn && addMaterialModal) {
+        addMaterialBtn.addEventListener('click', showAddMaterialModal);
+    }
+    
+    if (addModalClose) {
+        addModalClose.addEventListener('click', closeAddMaterialModal);
+    }
+    
+    if (clearBtn) {
+        clearBtn.addEventListener('click', clearAddMaterialForm);
+    }
+    
+    if (addMaterialFormBtn) {
+        addMaterialFormBtn.addEventListener('click', submitAddMaterial);
+    }
+    
+    // Close modal when clicking overlay
+    if (addMaterialModal) {
+        addMaterialModal.addEventListener('click', (e) => {
+            if (e.target === addMaterialModal) {
+                closeAddMaterialModal();
+            }
+        });
+    }
+    
+    console.log('Add material modal initialized');
 }
 
 /**
@@ -55,7 +94,7 @@ function validateAdminAccess() {
         }
 
         currentAdminUser = user;
-        console.log('Admin access validated for:', user.fullName);
+        console.log('Admin access validated for:', currentAdminUser.fullName);
 
     } catch (error) {
         console.error('Error validating admin access:', error);
@@ -72,6 +111,7 @@ function validateAdminAccess() {
  */
 function initializeUserMenu() {
     const userMenuContainer = document.getElementById('adminUserMenu');
+    // currentAdminUser is a global variable set during validation
     if (currentAdminUser && userMenuContainer) {
         pupulateAdminUserMenu(userMenuContainer);
     }
@@ -84,8 +124,9 @@ function initializeUserMenu() {
 function pupulateAdminUserMenu(container) {
     // Create menu items for admin
     const menuItems = [
-        '<a href="#" class="dropdown-item" id="adminProfileLink">Profile</a>',
-        '<a href="#" class="dropdown-item" id="adminPurchasesLink">Purchases</a>', // This should be implemented
+        '<a href="#" class="dropdown-item" id="adminProfileLink">Profile</a>', // This should link to the admin profile page
+        '<a href="#" class="dropdown-item" id="usersLink">Users</a>', // This should link to the users page
+        '<a href="#" class="dropdown-item" id="adminPurchasesLink">Purchases</a>', // This should link to the purchases page
         '<a href="#" class="dropdown-item" id="adminLogoutLink">Logout</a>'
     ];
 
@@ -134,20 +175,13 @@ function setupUserMenuEvents() {
             handleAdminLogout();
         });
     }
+    console.log("User menu events set up");
 }
 
 /**
  * Setup additional event listeners
  */
 function setupAdminEventListeners() {
-    // Add Material button
-    const addMaterialBtn = document.getElementById('addMaterialBtn');
-    if (addMaterialBtn) {
-        addMaterialBtn.addEventListener('click', function () {
-            alert('Add Material functionality will be implemented here.');
-        });
-    }
-
     // Modal close listeners
     const modalClose = document.getElementById('modalClose');
     const modalOverlay = document.getElementById('materialModal');
@@ -170,6 +204,8 @@ function setupAdminEventListeners() {
             closeMaterialModal();
         }
     });
+
+    console.log('Admin event listeners set up');
 }
 
 /**
@@ -229,7 +265,6 @@ async function loadMaterials() {
             throw new Error('Failed to fetch materials');
         }
         const materials = await response.json();
-        console.log('Fetched materials:', materials);
 
         // Sort materials by ID in descending order
         materials.sort((a, b) => b.id - a.id);
@@ -304,6 +339,8 @@ function displayMaterials(materials) {
     `).join('');
 
     materialsList.innerHTML = headerHTML + materialsHTML;
+
+    console.log("Materials list updated");
 }
 
 /**
@@ -320,8 +357,7 @@ async function showMaterialInfo(materialId) {
         }
 
         const material = await response.json();
-        console.log("Material: ", material);  // Debug log
-        console.log(JSON.stringify(material));
+        // console.log(JSON.stringify(material));
         openMaterialModal(material, 'view');
 
     } catch (error) {
@@ -391,7 +427,6 @@ function populateModalContent(material, mode) {
     priceElement.textContent = `Rs. ${(material.price || 0).toFixed(2)}`;
 
     // Populate PDF preview
-    console.log("PDF Preview: ", material.filename); // Debug log
     populatePDFPreview(material);
 
     // Populate details section
@@ -453,16 +488,6 @@ function populateDetailsSection(material, mode) {
         { key: 'studentYear', label: 'Student Year', value: material.studentYear || '' },
         { key: 'filename', label: 'File Name', value: material.filename || 'No file' }
     ];
-
-    // debug log
-    console.log("Title- ", material.title);
-    console.log("Price -", material.price);
-    console.log("University -", material.university);
-    console.log("Faculty -", material.faculty);
-    console.log("Course Module -", material.courseModule);
-    console.log("Student Year -", material.studentYear);
-    console.log("File Name -", material.filename);
-    // End of debug log
 
     let detailsHTML = '';
 
@@ -567,17 +592,11 @@ async function saveMaterial(materialId) {
     try {
         // Collect form data
         const formData = new FormData();
-        console.log(formData);  // Debug log
 
         // Get file input
         const fileInput = document.getElementById('materialFile');
-        console.log("File Input: ", fileInput);  // Debug log
         if (fileInput && fileInput.files.length > 0) {
-            console.log("Length: ", fileInput.files.length);  // Debug log
-            console.log("File: ", fileInput.files[0]);  // Debug log
-            console.log("File name: ", fileInput.files[0].name)
             formData.append('file', fileInput.files[0]);
-
         }
 
         // Collect material metadata
@@ -598,7 +617,6 @@ async function saveMaterial(materialId) {
 
         // Add metadata as JSON string
         formData.append('metadata', JSON.stringify(metadata));
-        console.log("Form Data: ", formData);  // Debug log
 
         // Send update request
         const response = await fetch(`http://localhost:8080/api/admin/materials/${materialId}`, {
@@ -747,11 +765,18 @@ function clearAuthData() {
 
 async function authenticatedFetch(url, options = {}) {
     const token = sessionStorage.getItem('authToken');
+
+    // Browser will set Content-Type automatically to multipart/form-data with boundary when using FormData
+    // So we only set Content-Type for non-FormData requests
     const headers = {
-        'Content-Type': 'application/json',
         ...(token && { 'Authorization': `Bearer ${token}` }),
         ...(options.headers || {})
     };
+
+    // Only add Content-Type if body is not FormData
+    if (!(options.body instanceof FormData)) {
+        headers['Content-Type'] = 'application/json';
+    }
 
     const config = {
         ...options,
@@ -768,4 +793,321 @@ async function authenticatedFetch(url, options = {}) {
     }
 
     return response;
+}
+
+/**
+ * Show add material modal
+ */
+function showAddMaterialModal() {
+    const addMaterialModal = document.getElementById('addMaterialModal');
+    const addMaterialFormContent = document.getElementById('addMaterialFormContent');
+    
+    // Generate form HTML
+    const formHTML = generateAddMaterialForm();
+    addMaterialFormContent.innerHTML = formHTML;
+    
+    // Initialize file upload functionality
+    initializeFileUpload();
+    
+    // Show modal
+    addMaterialModal.classList.add('show');
+    document.body.style.overflow = 'hidden';
+    
+    console.log('Add material modal opened');
+}
+
+/**
+ * Close add material modal
+ */
+function closeAddMaterialModal() {
+    const addMaterialModal = document.getElementById('addMaterialModal');
+    
+    addMaterialModal.classList.remove('show');
+    document.body.style.overflow = 'auto';
+    
+    console.log('Add material modal closed');
+}
+
+/**
+ * Generate add material form HTML
+ * @returns {string} Form HTML
+ */
+function generateAddMaterialForm() {
+    return `
+        <div class="form-group">
+            <label for="amfTitle">Title <span class="required-star">*</span></label>
+            <input type="text" id="amfTitle" name="title" required placeholder="Enter material title">
+            <div class="form-error-message" id="titleError">Title is required</div>
+        </div>
+        
+        <div class="form-group">
+            <label for="amfUniversity">University <span class="required-star">*</span></label>
+            <input type="text" id="amfUniversity" name="university" required placeholder="Enter university name">
+            <div class="form-error-message" id="universityError">University is required</div>
+        </div>
+        
+        <div class="form-group">
+            <label for="amfFaculty">Faculty <span class="required-star">*</span></label>
+            <input type="text" id="amfFaculty" name="faculty" required placeholder="Enter faculty">
+            <div class="form-error-message" id="facultyError">Faculty is required</div>
+        </div>
+
+        <div class="form-group">
+            <label for="amfCourseModule">Course Module <span class="required-star">*</span></label>
+            <input type="text" id="amfCourseModule" name="courseModule" required placeholder="Enter course module">
+            <div class="form-error-message" id="courseModuleError">Course module is required</div>
+        </div>
+
+        <div class="form-group">
+            <label for="amfStudentYear">Student Year <span class="required-star">*</span></label>
+            <input type="number" id="amfStudentYear" name="studentYear" min="1" step="1" max="4" required placeholder="Enter student year">
+            <div class="form-error-message" id="studentYearError">Student year is required</div>
+        </div>
+        
+        <div class="form-group">
+            <label for="amfPrice">Price <span class="required-star">*</span></label>
+            <input type="number" id="amfPrice" name="price" step="0.01" min="0" required placeholder="Enter price">
+            <div class="form-error-message" id="priceError">Valid price is required</div>
+        </div>
+
+        <div class="form-group">
+            <label for="amfFile">PDF File <span class="required-star">*</span></label>
+            <div class="add-file-upload" id="fileUploadArea">
+                <input type="file" id="amfFile" name="file" accept=".pdf" style="display: none;" required>
+                <div class="file-upload-area">
+                    <div class="file-upload-icon">📄</div>
+                    <div class="file-upload-text">
+                        <strong>Click to upload PDF</strong> or drag and drop
+                    </div>
+                    <div class="file-selected-text" id="selectedFileName" style="display: none;"></div>
+                </div>
+            </div>
+            <div class="form-error-message" id="fileError">PDF file is required</div>
+        </div>
+
+        <div class="form-group">
+            <small><span class="required-star">* Required fields</span></small>
+        </div>
+    `;
+}
+
+/**
+ * Initialize file upload functionality
+ */
+function initializeFileUpload() {
+    const fileInput = document.getElementById('amfFile');
+    const fileUploadArea = document.getElementById('fileUploadArea');
+    const selectedFileName = document.getElementById('selectedFileName');
+    const fileUploadText = fileUploadArea.querySelector('.file-upload-text');
+    
+    // Click to upload
+    fileUploadArea.addEventListener('click', () => {
+        fileInput.click();
+    });
+    
+    // File selection
+    fileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            handleFileSelection(file);
+        }
+    });
+    
+    // Drag and drop functionality
+    fileUploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        fileUploadArea.classList.add('dragover');
+    });
+    
+    fileUploadArea.addEventListener('dragleave', () => {
+        fileUploadArea.classList.remove('dragover');
+    });
+    
+    fileUploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        fileUploadArea.classList.remove('dragover');
+        
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            const file = files[0];
+            if (file.type === 'application/pdf') {
+                fileInput.files = files;
+                handleFileSelection(file);
+            } else {
+                alert('Please select a PDF file.');
+            }
+        }
+    });
+    
+    function handleFileSelection(file) {
+        fileUploadArea.classList.add('has-file');
+        fileUploadText.style.display = 'none';
+        selectedFileName.textContent = `Selected: ${file.name}`;
+        selectedFileName.style.display = 'block';
+        
+        // Clear error if exists
+        const fileError = document.getElementById('fileError');
+        if (fileError) {
+            fileError.style.display = 'none';
+        }
+    }
+}
+
+/**
+ * Clear add material form
+ */
+function clearAddMaterialForm() {
+    const form = document.getElementById('addMaterialFormContent');
+    const inputs = form.querySelectorAll('input');
+    
+    inputs.forEach(input => {
+        if (input.type === 'file') {
+            input.value = '';
+            // Reset file upload area
+            const fileUploadArea = document.getElementById('fileUploadArea');
+            const selectedFileName = document.getElementById('selectedFileName');
+            const fileUploadText = fileUploadArea.querySelector('.file-upload-text');
+            
+            fileUploadArea.classList.remove('has-file');
+            selectedFileName.style.display = 'none';
+            fileUploadText.style.display = 'block';
+        } else {
+            input.value = '';
+        }
+    });
+    
+    // Clear all error messages
+    const errorMessages = form.querySelectorAll('.form-error-message');
+    errorMessages.forEach(error => {
+        error.style.display = 'none';
+    });
+    
+    console.log('Add material form cleared');
+}
+
+/**
+ * Submit add material form
+ */
+async function submitAddMaterial() {
+    const form = document.getElementById('addMaterialFormContent');
+    
+    // Validate form
+    if (!validateAddMaterialForm()) {
+        return;
+    }
+
+    // Create metadata object
+    const metadata = {
+        title: document.getElementById('amfTitle').value.trim(),
+        university: document.getElementById('amfUniversity').value.trim(),
+        faculty: document.getElementById('amfFaculty').value.trim(),
+        courseModule: document.getElementById('amfCourseModule').value.trim(),
+        studentYear: document.getElementById('amfStudentYear').value.trim(),
+        price: document.getElementById('amfPrice').value
+    };
+
+    const formData = new FormData();
+    formData.append('metadata', JSON.stringify(metadata));
+    const fileInput = document.getElementById('amfFile');
+    if (fileInput.files.length > 0) {
+        formData.append('file', fileInput.files[0]);
+    }
+
+    try {
+        // Show loading state
+        const addBtn = document.getElementById('addMaterialFormBtn');
+        const originalText = addBtn.textContent;
+        addBtn.disabled = true;
+        addBtn.textContent = 'Adding Material...';
+
+        const response = await authenticatedFetch('http://localhost:8080/api/admin/materials', {
+            method: 'POST',
+            body: formData
+        });
+        
+        if (!response.ok) {
+            console.log(response)
+            const errorData = await response.json();
+            alert(`${errorData.error}. Please try again.`);
+            return;
+        }
+
+        if (response && response.ok) {
+            const result = await response.json();
+            alert('Material added successfully!');
+            closeAddMaterialModal();
+            loadMaterials(); // Refresh the materials list
+        } else {
+            throw new Error('Failed to add material');
+        }
+        
+    } catch (error) {
+        console.error('Error adding material:', error);
+        alert('Error adding material. Please try again.');
+    } finally {
+        // Reset button
+        const addBtn = document.getElementById('addMaterialFormBtn');
+        addBtn.disabled = false;
+        addBtn.textContent = 'Add Material';
+    }
+}
+
+/**
+ * Validate add material form
+ * @returns {boolean} True if valid, false otherwise
+ */
+function validateAddMaterialForm() {
+    let isValid = true;
+    
+    // Required fields
+    const requiredFields = [
+        { id: 'amfTitle', errorId: 'titleError', message: 'Title is required' },
+        { id: 'amfUniversity', errorId: 'universityError', message: 'University is required' },
+        { id: 'amfFaculty', errorId: 'facultyError', message: 'Faculty is required' },
+        { id: 'amfCourseModule', errorId: 'courseModuleError', message: 'Course module is required' },
+        { id: 'amfStudentYear', errorId: 'studentYearError', message: 'Student year is required' },
+        { id: 'amfPrice', errorId: 'priceError', message: 'Valid price is required' },
+        { id: 'amfFile', errorId: 'fileError', message: 'PDF file is required' }
+    ];
+    
+    // Clear all errors first
+    requiredFields.forEach(field => {
+        const errorEl = document.getElementById(field.errorId);
+        if (errorEl) {
+            errorEl.style.display = 'none';
+        }
+    });
+    
+    // Validate each field
+    requiredFields.forEach(field => {
+        const input = document.getElementById(field.id);
+        const errorEl = document.getElementById(field.errorId);
+        
+        if (input && errorEl) {
+            let fieldValid = true;
+            
+            if (input.type === 'file') {
+                fieldValid = input.files && input.files.length > 0;
+            } else {
+                fieldValid = input.value.trim() !== '';
+            }
+            
+            // Additional validation for price
+            if (field.id === 'amfPrice' && fieldValid) {
+                const price = parseFloat(input.value);
+                fieldValid = !isNaN(price) && price >= 0;
+            }
+            
+            if (!fieldValid) {
+                errorEl.textContent = field.message;
+                errorEl.style.display = 'block';
+                input.classList.add('required');
+                isValid = false;
+            } else {
+                input.classList.remove('required');
+            }
+        }
+    });
+    
+    return isValid;
 }
