@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="../../assets/css/variables.css">
     <link rel="stylesheet" href="../../assets/css/base.css">
     <link rel="stylesheet" href="../../assets/css/dashboard.css">
+    <link rel="stylesheet" href="../../assets/css/modal.css">
 </head>
 
 <body>
@@ -84,6 +85,45 @@
             </div>
         </div>
     </footer>
+
+    <!-- Material Details Modal -->
+    <div class="modal-overlay" id="materialModal">
+        <div class="modal-container">
+            <button class="modal-close" id="modalClose">&times;</button>
+            
+            <!-- Left Section - PDF Preview -->
+            <div class="modal-left">
+                <div class="pdf-preview" id="pdfPreview">
+                    <!-- PDF content will be loaded here -->
+                </div>
+                <div class="download-section">
+                    <button class="btn btn-download" id="downloadBtn">
+                        <strong>&DownArrowBar;</strong> Download Material
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Right Section - Details -->
+            <div class="modal-right">
+                <div class="material-header">
+                    <div class="material-id-title" id="modalMaterialTitle">
+                        <!-- Title will be populated -->
+                    </div>
+                    <div class="material-price-display" id="modalMaterialPrice">
+                        <!-- Price will be populated -->
+                    </div>
+                </div>
+                
+                <div class="material-details" id="materialDetailsContainer">
+                    <!-- Details will be populated -->
+                </div>
+                
+                <div class="modal-actions" id="modalActions">
+                    <!-- Action buttons will be populated -->
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Scripts -->
     <script src="../../assets/js/auth.js"></script>

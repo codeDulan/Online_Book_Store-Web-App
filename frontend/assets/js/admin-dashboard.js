@@ -147,6 +147,29 @@ function setupAdminEventListeners() {
             alert('Add Material functionality will be implemented here.');
         });
     }
+
+    // Modal close listeners
+    const modalClose = document.getElementById('modalClose');
+    const modalOverlay = document.getElementById('materialModal');
+
+    if (modalClose) {
+        modalClose.addEventListener('click', closeMaterialModal);
+    }
+
+    if (modalOverlay) {
+        modalOverlay.addEventListener('click', function (e) {
+            if (e.target === modalOverlay) {
+                closeMaterialModal();
+            }
+        });
+    }
+
+    // ESC key to close modal
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+            closeMaterialModal();
+        }
+    });
 }
 
 /**
@@ -250,7 +273,7 @@ function displayMaterials(materials) {
             <div>Title</div>
             <div>University</div>
             <div>Course Module</div>
-            <div>Price</div>
+            <div>Price (Rs.)</div>
             <div>Uploaded Date</div>
             <div>Actions</div>
         </div>
@@ -263,7 +286,7 @@ function displayMaterials(materials) {
             <div class="material-title">${escapeHtml(material.title || 'Untitled')}</div>
             <div class="material-university">${escapeHtml(material.university || 'N/A')}</div>
             <div class="material-course">${escapeHtml(material.courseModule || 'N/A')}</div>
-            <div class="material-price">$${(material.price || 0).toFixed(2)}</div>
+            <div class="material-price">${(material.price || 0).toFixed(2)}</div>
             <div class="material-date">${new Date(material.uploadedAt).toLocaleDateString()}</div>
             <div style="display: flex; gap: 5px;">
                 <div class="material-actions">
@@ -284,28 +307,410 @@ function displayMaterials(materials) {
 }
 
 /**
- * Show material info (placeholder for now)
+ * Show material info in modal
  * @param {number} materialId - ID of the material
  */
-function showMaterialInfo(materialId) {
-    alert(`Material Info functionality will be implemented soon.\nMaterial ID: ${materialId}`);
+async function showMaterialInfo(materialId) {
+    try {
+        // Fetch material details
+        const response = await authenticatedFetch(`http://localhost:8080/api/materials/${materialId}`);
+
+        if (!response || !response.ok) {
+            throw new Error('Failed to fetch material details');
+        }
+
+        const material = await response.json();
+        console.log("Material: ", material);  // Debug log
+        console.log(JSON.stringify(material));
+        openMaterialModal(material, 'view');
+
+    } catch (error) {
+        console.error('Error fetching material info:', error);
+        alert('Failed to load material information. Please try again.');
+    }
 }
 
 /**
- * Edit material (placeholder for now)
+ * Edit material - opens modal in edit mode
  * @param {number} materialId - ID of the material
  */
-function editMaterial(materialId) {
-    alert(`Edit Material functionality will be implemented soon.\nMaterial ID: ${materialId}`);
+async function editMaterial(materialId) {
+    try {
+        // Fetch material details
+        const response = await authenticatedFetch(`http://localhost:8080/api/materials/${materialId}`);
+
+        if (!response || !response.ok) {
+            throw new Error('Failed to fetch material details');
+        }
+
+        const material = await response.json();
+        openMaterialModal(material, 'edit');
+
+    } catch (error) {
+        console.error('Error fetching material for editing:', error);
+        alert('Failed to load material for editing. Please try again.');
+    }
 }
 
 /**
- * Escape HTML to prevent XSS
- * @param {string} text - Text to escape
+ * Open material modal
+ * @param {Object} material - Material object
+ * @param {string} mode - 'view' or 'edit'
+ */
+function openMaterialModal(material, mode = 'view') {
+    const modal = document.getElementById('materialModal');
+
+    // Populate modal content
+    populateModalContent(material, mode);
+
+    // Show modal
+    modal.classList.add('show');
+    document.body.style.overflow = 'hidden';
+}
+
+/**
+ * Close material modal
+ */
+function closeMaterialModal() {
+    const modal = document.getElementById('materialModal');
+    modal.classList.remove('show');
+    document.body.style.overflow = '';
+}
+
+/**
+ * Populate modal content
+ * @param {Object} material - Material object
+ * @param {string} mode - 'view' or 'edit'
+ */
+function populateModalContent(material, mode) {
+    // Populate header
+    const titleElement = document.getElementById('modalMaterialTitle');
+    const priceElement = document.getElementById('modalMaterialPrice');
+
+    titleElement.textContent = `#${material.id} | ${material.title || 'Untitled'}`;
+    priceElement.textContent = `Rs. ${(material.price || 0).toFixed(2)}`;
+
+    // Populate PDF preview
+    console.log("PDF Preview: ", material.filename); // Debug log
+    populatePDFPreview(material);
+
+    // Populate details section
+    populateDetailsSection(material, mode);
+
+    // Populate actions
+    populateModalActions(material, mode);
+}
+
+/**
+ * Populate PDF preview section
+ * @param {Object} material - Material object
+ */
+function populatePDFPreview(material) {
+    const pdfPreview = document.getElementById('pdfPreview');
+    const downloadBtn = document.getElementById('downloadBtn');
+
+    if (material.filename) {
+        // Create PDF iframe
+        // encodeURIComponent() : Encodes all special characters to URL - safe format
+        pdfPreview.innerHTML = `
+            <iframe 
+                class="pdf-iframe" 
+                src="../../../backend/OnlineBookStore/uploads/${encodeURIComponent(material.filename)}"
+                title="Material Preview">
+            </iframe>
+        `;
+
+        // Setup download button
+        downloadBtn.onclick = () => downloadMaterial(material.id, material.filename);
+    } else {
+        // Show placeholder
+        pdfPreview.innerHTML = `
+            <div class="pdf-placeholder">
+                <div class="pdf-placeholder-icon">📄</div>
+                <p>No file available for preview</p>
+            </div>
+        `;
+
+        downloadBtn.disabled = true;
+        downloadBtn.textContent = 'No file to download';
+    }
+}
+
+/**
+ * Populate details section
+ * @param {Object} material - Material object
+ * @param {string} mode - 'view' or 'edit'
+ */
+function populateDetailsSection(material, mode) {
+    const detailsContainer = document.getElementById('materialDetailsContainer');
+
+    const fields = [
+        { key: 'title', label: 'Title', value: material.title || '' },
+        { key: 'price', label: 'Price (Rs.)', value: material.price || '' },
+        { key: 'university', label: 'University', value: material.university || '' },
+        { key: 'faculty', label: 'Faculty', value: material.faculty || '' },
+        { key: 'courseModule', label: 'Course Module', value: material.courseModule || '' },
+        { key: 'studentYear', label: 'Student Year', value: material.studentYear || '' },
+        { key: 'filename', label: 'File Name', value: material.filename || 'No file' }
+    ];
+
+    // debug log
+    console.log("Title- ", material.title);
+    console.log("Price -", material.price);
+    console.log("University -", material.university);
+    console.log("Faculty -", material.faculty);
+    console.log("Course Module -", material.courseModule);
+    console.log("Student Year -", material.studentYear);
+    console.log("File Name -", material.filename);
+    // End of debug log
+
+    let detailsHTML = '';
+
+    // Add fields in view or edit mode
+    fields.forEach(field => {
+        if (mode === 'edit' && field.key !== 'filename') {
+            const inputType = field.key === 'price' ? 'number' : 'text';
+            const inputAttrs = field.key === 'price' ? 'step="0.01" min="0"' : '';
+            detailsHTML += `
+                <div class="detail-group">
+                    <div class="detail-label">${field.label}</div>
+                    <input type="${inputType}" class="detail-value editable" 
+                           id="edit_${field.key}" 
+                           value="${escapeHtml(field.value)}"
+                           ${inputAttrs}
+                           ${field.key === 'title' ? 'data-required="true"' : ''}>
+                </div>
+            `;
+        } else {
+            detailsHTML += `
+                <div class="detail-group">
+                    <div class="detail-label">${field.label}</div>
+                    <div class="detail-value">${field.value}</div>
+                    <!-- <div class="detail-value">${escapeHtml(field.value)}</div> -->
+                </div>
+            `;
+        }
+    });
+
+    // Add file upload section for edit mode
+    if (mode === 'edit') {
+        detailsHTML += `
+            <div class="detail-group">
+                <div class="detail-label">Update File (Optional)</div>
+                <div class="file-upload-section" id="fileUploadSection">
+                    <input type="file" id="materialFile" class="file-input" accept=".pdf">
+                    <button type="button" class="btn file-upload-btn" onclick="document.getElementById('materialFile').click()">
+                        Choose File
+                    </button>
+                    <div class="file-info" id="fileInfo">
+                        <div class="current-file">Current: ${material.filename || 'No file'}</div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+    detailsContainer.innerHTML = detailsHTML;
+
+    // Add file change listener for edit mode
+    if (mode === 'edit') {
+        const fileUploadSection = document.getElementById('fileUploadSection');
+        const fileInput = document.getElementById('materialFile');
+        const fileInfo = document.getElementById('fileInfo');
+
+        fileInput.addEventListener('change', function () {
+            if (this.files.length > 0) {
+                const file = this.files[0];
+                fileUploadSection.classList.add('has-file');
+                fileInfo.innerHTML = `<div class="current-file">Selected: ${file.name}</div>`;
+            } else {
+                fileUploadSection.classList.remove('has-file');
+                fileInfo.innerHTML = `<div class="current-file">Current: ${material.filename || 'No file'}</div>`;
+            }
+        });
+    }
+}
+
+/**
+ * Populate modal actions
+ * @param {Object} material - Material object
+ * @param {string} mode - 'view' or 'edit'
+ */
+function populateModalActions(material, mode) {
+    const actionsContainer = document.getElementById('modalActions');
+
+    if (mode === 'edit') {
+        actionsContainer.innerHTML = `
+            <button class="btn btn-cancel" onclick="openMaterialModal(${JSON.stringify(material).replace(/"/g, '&quot;')}, 'view')">
+                Cancel
+            </button>
+            <button class="btn btn-save" onclick="saveMaterial(${material.id})">
+                Save Changes
+            </button>
+        `;
+    } else {
+        actionsContainer.innerHTML = `
+            <button class="btn btn-delete" onclick="deleteMaterial(${material.id})">
+                Delete
+            </button>
+            <button class="btn btn-edit" onclick="openMaterialModal(${JSON.stringify(material).replace(/"/g, '&quot;')}, 'edit')">
+                Edit
+            </button>
+        `;
+    }
+}
+
+/**
+ * Save material changes
+ * @param {number} materialId - ID of the material to save
+ */
+async function saveMaterial(materialId) {
+    try {
+        // Collect form data
+        const formData = new FormData();
+        console.log(formData);  // Debug log
+
+        // Get file input
+        const fileInput = document.getElementById('materialFile');
+        console.log("File Input: ", fileInput);  // Debug log
+        if (fileInput && fileInput.files.length > 0) {
+            console.log("Length: ", fileInput.files.length);  // Debug log
+            console.log("File: ", fileInput.files[0]);  // Debug log
+            console.log("File name: ", fileInput.files[0].name)
+            formData.append('file', fileInput.files[0]);
+
+        }
+
+        // Collect material metadata
+        const metadata = {
+            title: document.getElementById('edit_title')?.value || '',
+            price: parseFloat(document.getElementById('edit_price')?.value) || 0,
+            university: document.getElementById('edit_university')?.value || '',
+            faculty: document.getElementById('edit_faculty')?.value || '',
+            courseModule: document.getElementById('edit_courseModule')?.value || '',
+            studentYear: document.getElementById('edit_studentYear')?.value || ''
+        };
+
+        // Validate required fields
+        if (!metadata.title.trim()) {
+            alert('Title is required');
+            return;
+        }
+
+        // Add metadata as JSON string
+        formData.append('metadata', JSON.stringify(metadata));
+        console.log("Form Data: ", formData);  // Debug log
+
+        // Send update request
+        const response = await fetch(`http://localhost:8080/api/admin/materials/${materialId}`, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${sessionStorage.getItem('authToken')}`
+            },
+            body: formData
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            alert(`${errorData.error}. Please try again.`);
+            return;
+        }
+
+        const updatedMaterial = await response.json();
+        console.log(updatedMaterial);
+
+        // Show success message
+        alert('Material updated successfully!');
+
+        // Close modal and refresh list
+        closeMaterialModal();
+        loadMaterials();
+
+    } catch (error) {
+        console.error('Error saving material:', error);
+        alert('Failed to save material changes. Please try again.');
+    }
+}
+
+/**
+ * Delete material
+ * @param {number} materialId - ID of the material to delete
+ */
+async function deleteMaterial(materialId) {
+    if (!confirm('Are you sure you want to delete this material? This action cannot be undone.')) {
+        return;
+    }
+
+    try {
+        const response = await authenticatedFetch(`http://localhost:8080/api/admin/materials/${materialId}`, {
+            method: 'DELETE'
+        });
+
+        if (!response || !response.ok) {
+            throw new Error('Failed to delete material');
+        }
+
+        // Show success message
+        alert('Material deleted successfully!');
+
+        // Close modal and refresh list
+        closeMaterialModal();
+        loadMaterials();
+
+    } catch (error) {
+        console.error('Error deleting material:', error);
+        alert('Failed to delete material. Please try again.');
+    }
+}
+
+/**
+ * Download material file
+ * @param {number} materialId - ID of the material
+ * @param {string} filename - Name of the file
+ */
+async function downloadMaterial(materialId, filename) {
+    try {
+        const response = await authenticatedFetch(`http://localhost:8080/api/materials/${materialId}/download`);
+
+        if (!response || !response.ok) {
+            throw new Error('Failed to download material');
+        }
+
+        // Create blob and download
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename || `material-${materialId}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+
+    } catch (error) {
+        console.error('Error downloading material:', error);
+        alert('Failed to download material. Please try again.');
+    }
+}
+
+/**
+ * 'escapeHtml()' is a function that prevents Cross - Site Scripting(XSS) attacks by converting
+ *   potentially dangerous HTML characters into safe HTML entities.
+ *     -> Prevents attackers from injecting malicious scripts into web pages viewed by other users.
+ *     -> Use it to sanitize any user - generated content before inserting it into the DOM.
+ *     -> Use with innerHTML or template literals that render to DOM.
+ * @param {any} text - Text to escape
  * @returns {string} - Escaped text
  */
 function escapeHtml(text) {
-    if (typeof text !== 'string') return '';
+    // Handle null, undefined, or empty values
+    if (text === null || text === undefined) return '';
+
+    // Convert to string first (handles numbers, booleans, etc.)
+    const str = String(text);
+
+    // If it's an empty string, return it
+    if (str === '') return '';
+
     const map = {
         '&': '&amp;',
         '<': '&lt;',
@@ -313,7 +718,7 @@ function escapeHtml(text) {
         '"': '&quot;',
         "'": '&#039;'
     };
-    return text.replace(/[&<>"']/g, function (m) { return map[m]; });
+    return str.replace(/[&<>"']/g, function (m) { return map[m]; });
 }
 
 /**
