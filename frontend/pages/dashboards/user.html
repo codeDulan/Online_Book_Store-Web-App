@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EDURA Online Material Store</title>
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="../../assets/css/variables.css">
+    <link rel="stylesheet" href="../../assets/css/base.css">
+    <link rel="stylesheet" href="../../assets/css/dashboard.css">
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <!-- Brand -->
+                <div class="brand">
+                    <img src="../../assets/images/logo.png" alt="EDURA Logo" class="brand-logo">
+                    <h1 class="brand-name">EDURA</h1>
+                </div>
+
+                <!-- User Menu -->
+                <div class="header-actions">
+                    <div class="user-menu" id="userUserMenu">
+                        <!-- User menu will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Dashboard Content -->
+    <main class="main">
+        <div class="container">
+            <!-- My Library Section -->
+            <section id="library" class="dashboard-section active">
+                <div class="section-header">
+                    <h3>My Library</h3>
+                    <p>Your purchased materials</p>
+                </div>
+
+                <div class="materials-grid" id="userLibrary">
+                    <!-- User's purchased materials will be populated by JavaScript -->
+                </div>
+            </section>
+
+            <!-- Browse Materials Section -->
+            <section id="browse" class="dashboard-section">
+                <div class="section-header">
+                    <h3>Browse Materials</h3>
+                    <p>Discover and purchase new learning materials</p>
+                </div>
+
+                <!-- Search and Filter Controls -->
+                <div class="browse-controls">
+                    <div class="search-box">
+                        <input type="text" id="materialSearch" placeholder="Search materials..." class="search-input">
+                        <button class="search-btn" id="searchMaterialsBtn">Search</button>
+                        </div>
+                        
+                        <div class="filter-controls">
+                            <select id="universityFilter" class="filter-select" aria-label="Filter by university">
+                                <option value="">All Universities</option>
+                                <!-- Universities will be populated by JavaScript -->
+                            </select>
+                        
+                            <select id="facultyFilter" class="filter-select" aria-label="Filter by faculty">
+                                <option value="">All Faculties</option>
+                                <!-- Faculties will be populated by JavaScript -->
+                            </select>
+                            <div class="filter-group">
+                                <label for="purchasedFilter" class="filter-label">Show Purchased Only</label>
+                                <input type="checkbox" id="purchasedFilter" class="filter-checkbox" aria-label="Show purchased materials only">
+                            </div>
+                            <button class="btn-clearFilters" id="clearFiltersBtn">Clear Filters</button>
+                        </div>
+                        </div>
+
+                <div class="materials-grid" id="browseMaterials">
+                    <!-- Available materials will be populated by JavaScript -->
+                </div>
+            </section>
+
+            <!-- My Purchases Section -->
+            <section id="purchases" class="dashboard-section">
+                <div class="section-header">
+                    <h3>Purchase History</h3>
+                    <p>View your past purchases history</p>
+                </div>
+
+                <div class="purchases-list" id="purchaseHistory">
+                    <!-- Purchase history will be populated by JavaScript -->
+                </div>
+            </section>
+
+            <!-- Profile Section -->
+            <section id="profile" class="dashboard-section">
+                <div class="section-header">
+                    <h3>Profile Settings</h3>
+                    <p>Manage your account information</p>
+                </div>
+
+                <div class="profile-content">
+                    <div class="profile-info" id="profileInfo">
+                        <!-- Profile information will be populated by JavaScript -->
+                        <div class="content-placeholder">
+                            <div class="placeholder-text" id="empty-profile-info">No Profile Information Available.</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="dashboard-footer">
+        <div class="container">
+            <div class="footer-content">
+                <p>&copy; 2024 EDURA Online Book Store. All rights reserved.</p>
+                <div class="footer-links">
+                    <a href="#" class="footer-link">Help</a>
+                    <a href="#" class="footer-link">Support</a>
+                    <a href="#" class="footer-link">Terms</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="../../assets/js/auth.js"></script>
+    <script src="../../assets/js/user-dashboard.js"></script>
+</body>
+
+</html>
