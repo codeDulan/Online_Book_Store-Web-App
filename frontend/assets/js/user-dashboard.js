@@ -387,7 +387,7 @@ function setupUserEventListeners() {
         searchBtn.addEventListener('click', performSearch);
     }
 
-    const searchInput = document.getElementById('materialSearch');
+    const searchInput = document.getElementById('search-bar');
     if (searchInput) {
         searchInput.addEventListener('keypress', function (e) {
             if (e.key === 'Enter') {

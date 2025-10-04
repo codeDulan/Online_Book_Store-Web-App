@@ -188,7 +188,7 @@ function setupAdminEventListeners() {
         searchBtn.addEventListener('click', performSearch);
     }
 
-    const searchInput = document.getElementById('materialSearch');
+    const searchInput = document.getElementById('search-bar');
     if (searchInput) {
         searchInput.addEventListener('keypress', function (e) {
             if (e.key === 'Enter') {
@@ -323,44 +323,45 @@ function displayMaterials(materials) {
         return;
     }
 
-    // Create header
-    const headerHTML = `
-        <div class="materials-header">
-            <div>ID</div>
-            <div>Title</div>
-            <div>University</div>
-            <div>Course Module</div>
-            <div>Price (Rs.)</div>
-            <div>Uploaded Date</div>
-            <div>Actions</div>
+    materialsList.innerHTML = `
+        <div class="materials-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Title</th>
+                        <th>University</th>
+                        <th>Course Module</th>
+                        <th>Price (Rs.)</th>
+                        <th>Uploaded Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${materials.map(material => `
+                        <tr data-material-id="${material.id}">
+                            <td>#${material.id}</td>
+                            <td>${escapeHtml(material.title || 'Untitled')}</td>
+                            <td>${escapeHtml(material.university || 'N/A')}</td>
+                            <td>${escapeHtml(material.courseModule || 'N/A')}</td>
+                            <td>${(material.price || 0).toFixed(2)}</td>
+                            <td>${new Date(material.uploadedAt).toLocaleDateString()}</td>
+                            <td>
+                                <div class="table-actions">
+                                    <button class="btn btn-small btn-info" onclick="showMaterialInfo(${material.id})" title="View Details">
+                                        More Info
+                                    </button>
+                                    <button class="btn btn-small btn-edit" onclick="editMaterial(${material.id})" title="Edit Material">
+                                        Edit
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
         </div>
     `;
-
-    // Create material items
-    const materialsHTML = materials.map(material => `
-        <div class="material-item" data-material-id="${material.id}">
-            <div class="material-id">#${material.id}</div>
-            <div class="material-title">${escapeHtml(material.title || 'Untitled')}</div>
-            <div class="material-university">${escapeHtml(material.university || 'N/A')}</div>
-            <div class="material-course">${escapeHtml(material.courseModule || 'N/A')}</div>
-            <div class="material-price">${(material.price || 0).toFixed(2)}</div>
-            <div class="material-date">${new Date(material.uploadedAt).toLocaleDateString()}</div>
-            <div style="display: flex; gap: 5px;">
-                <div class="material-actions">
-                    <button class="btn btn-small btn-info" onclick="showMaterialInfo(${material.id})">
-                    More Info
-                    </button>
-                </div>
-            <div class="material-actions">
-            <button class="btn btn-small btn-edit" onclick="editMaterial(${material.id})">
-            Edit
-            </button>
-            </div>
-            </div>
-        </div>
-    `).join('');
-
-    materialsList.innerHTML = headerHTML + materialsHTML;
 
     console.log("Materials list updated");
 }
@@ -503,11 +504,11 @@ function populateDetailsSection(material, mode) {
 
     const fields = [
         { key: 'title', label: 'Title', value: material.title || '' },
-        { key: 'price', label: 'Price (Rs.)', value: material.price || '' },
+        { key: 'price', label: 'Price (Rs.)', value: (material.price.toFixed(2)) || 0 },
         { key: 'university', label: 'University', value: material.university || '' },
         { key: 'faculty', label: 'Faculty', value: material.faculty || '' },
         { key: 'courseModule', label: 'Course Module', value: material.courseModule || '' },
-        { key: 'studentYear', label: 'Student Year', value: material.studentYear || '' },
+        { key: 'studentYear', label: 'Student Year', value: material.studentYear || 1 },
         { key: 'filename', label: 'File Name', value: material.filename || 'No file' }
     ];
 
@@ -516,8 +517,8 @@ function populateDetailsSection(material, mode) {
     // Add fields in view or edit mode
     fields.forEach(field => {
         if (mode === 'edit' && field.key !== 'filename') {
-            const inputType = field.key === 'price' ? 'number' : 'text';
-            const inputAttrs = field.key === 'price' ? 'step="0.01" min="0"' : '';
+            const inputType = (field.key === 'price' || field.key === 'studentYear') ? 'number' : 'text';
+            const inputAttrs = field.key === 'price' ? 'step="0.01" min="0"' : field.key === 'studentYear' ? 'min="1" max="4" step="1"' : '';
             detailsHTML += `
                 <div class="detail-group">
                     <div class="detail-label">${field.label}</div>
@@ -525,7 +526,7 @@ function populateDetailsSection(material, mode) {
                            id="edit_${field.key}" 
                            value="${escapeHtml(field.value)}"
                            ${inputAttrs}
-                           ${field.key === 'title' ? 'data-required="true"' : ''}>
+                           ${field.key !== 'filename' ? 'required' : ''}>
                 </div>
             `;
         } else {
@@ -585,6 +586,9 @@ function populateDetailsSection(material, mode) {
 function populateModalActions(material, mode) {
     const actionsContainer = document.getElementById('modalActions');
 
+    /** 
+      * View the 'Edit' button's code in developer tools element to understand stringify and replace 
+      */
     if (mode === 'edit') {
         actionsContainer.innerHTML = `
             <button class="btn btn-cancel" onclick="openMaterialModal(${JSON.stringify(material).replace(/"/g, '&quot;')}, 'view')">
@@ -631,11 +635,39 @@ async function saveMaterial(materialId) {
             studentYear: document.getElementById('edit_studentYear')?.value || ''
         };
 
+        /**
+         * Debug logs for metadata validation
+         */
+        // console.log(metadata);
+        // console.log("Metadata keys:", Object.keys(metadata));
+        // console.log("Metadata length:", Object.keys(metadata).length);
+
         // Validate required fields
-        if (!metadata.title.trim()) {
-            alert('Title is required');
-            return;
+        for (const key in metadata) {
+            if (!Object.hasOwn(metadata, key)) continue;
+            
+            const element = metadata[key];
+            if (element === '') {
+                alert("All fields must be filled out.");
+                return;
+            }
+
+            if (key === 'price') {
+                if (metadata[key] < 0) {
+                    alert("Enter a valid amount.")
+                    return;
+                }
+            }
+
+            if (key === 'studentYear') {
+                if (metadata[key] < 1 || 4 < metadata[key]) {
+                    alert("Enter a valid student year.")
+                    return;
+                }
+            }
         }
+
+        console.log("Material data validation successful");
 
         // Add metadata as JSON string
         formData.append('metadata', JSON.stringify(metadata));
@@ -656,7 +688,7 @@ async function saveMaterial(materialId) {
         }
 
         const updatedMaterial = await response.json();
-        console.log(updatedMaterial);
+        console.log("Updated Material:", updatedMaterial);
 
         // Show success message
         alert('Material updated successfully!');
@@ -882,7 +914,7 @@ function generateAddMaterialForm() {
 
         <div class="form-group">
             <label for="amfStudentYear">Student Year <span class="required-star">*</span></label>
-            <input type="number" id="amfStudentYear" name="studentYear" min="1" step="1" max="4" required placeholder="Enter student year">
+            <input type="number" id="amfStudentYear" name="studentYear" min="1" max="4" step="1" required placeholder="Enter student year">
             <div class="form-error-message" id="studentYearError">Student year is required</div>
         </div>
         
@@ -1087,42 +1119,47 @@ function validateAddMaterialForm() {
         { id: 'amfUniversity', errorId: 'universityError', message: 'University is required' },
         { id: 'amfFaculty', errorId: 'facultyError', message: 'Faculty is required' },
         { id: 'amfCourseModule', errorId: 'courseModuleError', message: 'Course module is required' },
-        { id: 'amfStudentYear', errorId: 'studentYearError', message: 'Student year is required' },
+        { id: 'amfStudentYear', errorId: 'studentYearError', message: 'Valid student year is required' },
         { id: 'amfPrice', errorId: 'priceError', message: 'Valid price is required' },
         { id: 'amfFile', errorId: 'fileError', message: 'PDF file is required' }
     ];
     
     // Clear all errors first
     requiredFields.forEach(field => {
-        const errorEl = document.getElementById(field.errorId);
-        if (errorEl) {
-            errorEl.style.display = 'none';
+        const errorField = document.getElementById(field.errorId);
+        if (errorField) {
+            errorField.style.display = 'none';
         }
     });
     
     // Validate each field
     requiredFields.forEach(field => {
         const input = document.getElementById(field.id);
-        const errorEl = document.getElementById(field.errorId);
+        const errorField = document.getElementById(field.errorId);
         
-        if (input && errorEl) {
-            let fieldValid = true;
+        if (input && errorField) {
+            let isFieldValid = true;
             
             if (input.type === 'file') {
-                fieldValid = input.files && input.files.length > 0;
+                isFieldValid = input.files && input.files.length > 0;
             } else {
-                fieldValid = input.value.trim() !== '';
+                isFieldValid = input.value.trim() !== '';
             }
             
-            // Additional validation for price
-            if (field.id === 'amfPrice' && fieldValid) {
+            // Additional validation for student year and price
+            if (field.id === 'amfStudentYear' && isFieldValid) {
+                const year = parseInt(input.value, 10);
+                isFieldValid = !isNaN(year) && year >= 1 && year <= 4;
+            }
+
+            if (field.id === 'amfPrice' && isFieldValid) {
                 const price = parseFloat(input.value);
-                fieldValid = !isNaN(price) && price >= 0;
+                isFieldValid = !isNaN(price) && price >= 0;
             }
             
-            if (!fieldValid) {
-                errorEl.textContent = field.message;
-                errorEl.style.display = 'block';
+            if (!isFieldValid) {
+                errorField.textContent = field.message;
+                errorField.style.display = 'block';
                 input.classList.add('required');
                 isValid = false;
             } else {
