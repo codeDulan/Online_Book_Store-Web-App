@@ -116,7 +116,7 @@ function displayUserLibrary(purchases) {
                 <p class="material-price">Rs.${purchase.purchasePrice || '0.00'}</p>
             </div>
             <div class="material-actions">
-                <button class="btn btn-outline" onclick="downloadMaterial(${purchase.material.id})">
+                <button class="btn btn-download" onclick="downloadMaterial(${purchase.material.id})">
                     Download
                 </button>
             </div>
@@ -173,7 +173,7 @@ function displayBrowseMaterials(materials) {
             </div>
             <div class="material-actions">
                 ${material.purchased ?
-            `<button class="btn btn-success" onclick="downloadMaterial(${material.id})">Download</button>` :
+            `<button class="btn btn-download" onclick="downloadMaterial(${material.id})">Download</button>` :
             `<button class="btn btn-primary" onclick="purchaseMaterial(${material.id})">Purchase</button>`
         }
             </div>
@@ -236,22 +236,24 @@ function displayPurchaseHistory(purchases) {
             <table>
                 <thead>
                     <tr>
+                        <th>ID</th>
                         <th>Material</th>
+                        <th>University</th>
                         <th>Date</th>
                         <th>Amount (Rs.)</th>
-                        <th>Status</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     ${purchases.map(purchase => `
                         <tr>
+                            <td>${purchase.id || 'N/A'}</td>
                             <td>${purchase.material.title || 'Material'}</td>
+                            <td>${purchase.material.university || 'N/A'}</td>
                             <td>${new Date(purchase.purchaseDate).toLocaleDateString()}</td>
                             <td>${purchase.purchasePrice || '0.00'}</td>
-                            <td><span class="status-success">Completed</span></td>
                             <td>
-                                <button class="btn btn-small" onclick="downloadMaterial(${purchase.material.id})">
+                                <button class="btn btn-small btn-download" onclick="downloadMaterial(${purchase.material.id})">
                                     Download
                                 </button>
                             </td>

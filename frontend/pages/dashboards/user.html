@@ -9,7 +9,8 @@
     <!-- Stylesheets -->
     <link rel="stylesheet" href="../../assets/css/variables.css">
     <link rel="stylesheet" href="../../assets/css/base.css">
-    <link rel="stylesheet" href="../../assets/css/dashboard.css">
+    <!-- <link rel="stylesheet" href="../../assets/css/dashboard.css"> -->
+    <link rel="stylesheet" href="../../assets/css/user-dashboard.css">
 </head>
 
 <body>
@@ -37,7 +38,7 @@
     <main class="main">
         <div class="container">
             <!-- My Library Section -->
-            <section id="library" class="dashboard-section active">
+            <section id="library" class="dashboard-section">
                 <div class="section-header">
                     <h3>My Library</h3>
                     <p>Your purchased materials</p>
@@ -60,25 +61,26 @@
                     <div class="search-box">
                         <input type="text" id="materialSearch" placeholder="Search materials..." class="search-input">
                         <button class="search-btn" id="searchMaterialsBtn">Search</button>
+                    </div>
+
+                    <div class="filter-controls">
+                        <select id="universityFilter" class="filter-select" aria-label="Filter by university">
+                            <option value="">All Universities</option>
+                            <!-- Universities will be populated by JavaScript -->
+                        </select>
+
+                        <select id="facultyFilter" class="filter-select" aria-label="Filter by faculty">
+                            <option value="">All Faculties</option>
+                            <!-- Faculties will be populated by JavaScript -->
+                        </select>
+                        <div class="filter-group">
+                            <label for="purchasedFilter" class="filter-label">Show Purchased Only</label>
+                            <input type="checkbox" id="purchasedFilter" class="filter-checkbox"
+                                aria-label="Show purchased materials only">
                         </div>
-                        
-                        <div class="filter-controls">
-                            <select id="universityFilter" class="filter-select" aria-label="Filter by university">
-                                <option value="">All Universities</option>
-                                <!-- Universities will be populated by JavaScript -->
-                            </select>
-                        
-                            <select id="facultyFilter" class="filter-select" aria-label="Filter by faculty">
-                                <option value="">All Faculties</option>
-                                <!-- Faculties will be populated by JavaScript -->
-                            </select>
-                            <div class="filter-group">
-                                <label for="purchasedFilter" class="filter-label">Show Purchased Only</label>
-                                <input type="checkbox" id="purchasedFilter" class="filter-checkbox" aria-label="Show purchased materials only">
-                            </div>
-                            <button class="btn-clearFilters" id="clearFiltersBtn">Clear Filters</button>
-                        </div>
-                        </div>
+                        <button class="btn-clearFilters" id="clearFiltersBtn">Clear Filters</button>
+                    </div>
+                </div>
 
                 <div class="materials-grid" id="browseMaterials">
                     <!-- Available materials will be populated by JavaScript -->
@@ -108,7 +110,8 @@
                     <div class="profile-info" id="profileInfo">
                         <!-- Profile information will be populated by JavaScript -->
                         <div class="content-placeholder">
-                            <div class="placeholder-text" id="empty-profile-info">No Profile Information Available.</div>
+                            <div class="placeholder-text" id="empty-profile-info">No Profile Information Available.
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -117,7 +120,7 @@
     </main>
 
     <!-- Footer -->
-    <footer class="dashboard-footer">
+    <footer class="footer">
         <div class="container">
             <div class="footer-content">
                 <p>&copy; 2024 EDURA Online Book Store. All rights reserved.</p>

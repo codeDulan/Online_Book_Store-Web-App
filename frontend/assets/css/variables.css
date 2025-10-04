@@ -65,4 +65,12 @@
   --header-height: 80px;
   --footer-height: 40px;
   --container-padding: var(--spacing-lg);
+
+  /* Card Component Attributes */
+  --card-width: 14rem;
+  --card-background-color: var(--CatCol);
+  --card-border: 1px solid var(--border);
+  --card-border-radius: var(--radius-sm);
+  --card-box-shadow: var(--shadow-sm);
+  --card-padding: var(--spacing-md);
 }
