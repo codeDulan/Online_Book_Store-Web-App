@@ -1,10 +1,9 @@
 /**
- * Dashboard main Layout
+ * Dashboard Main Layout
  */
 .main {
     padding: var(--spacing-sm) 0;
     background-color: var(--background);
-    margin-bottom: var(--footer-height);
 }
 
 /**
@@ -261,6 +260,9 @@
 }
 
 .material-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
     width: var(--card-width);
     background-color: var(--card-background-color);
     border: var(--card-border);
@@ -277,12 +279,31 @@
     display: grid;
     place-items: center;
     width: 100%;
-    height: 180px;
+    height: 10rem;  /* 160px */
     object-fit: cover;
     background-color: var(--light-gray);
     border: 2px solid var(--border);
     border-radius: var(--radius-sm);
-    margin: var(--spacing-xs) 0;
+    margin: var(--spacing-sm) 0 var(--spacing-xs);
+}
+
+.material-university {
+    font-size: var(--font-size-large);
+    color: var(--gray);
+}
+.material-faculty {
+    font-size: var(--font-size-base);
+    color: var(--gray);
+}
+.material-courseModule {
+    font-size: var(--font-size-small);
+    font-weight: var(--font-weight-medium);
+    color: var(--gray);
+}
+.material-price {
+    font-size: var(--font-size-large);
+    font-weight: var(--font-weight-semibold);
+    color: var(--primary);
 }
 
 .material-actions {

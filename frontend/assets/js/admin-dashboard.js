@@ -182,6 +182,21 @@ function setupUserMenuEvents() {
  * Setup additional event listeners
  */
 function setupAdminEventListeners() {
+    // Search functionality
+    const searchBtn = document.getElementById('searchMaterialsBtn');
+    if (searchBtn) {
+        searchBtn.addEventListener('click', performSearch);
+    }
+
+    const searchInput = document.getElementById('materialSearch');
+    if (searchInput) {
+        searchInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+    }
+
     // Modal close listeners
     const modalClose = document.getElementById('modalClose');
     const modalOverlay = document.getElementById('materialModal');
@@ -242,7 +257,14 @@ async function handleAdminLogout() {
     }
 }
 
-
+/** 
+ * Perform search action 
+ */
+function performSearch() {
+    console.log('Performing search...');
+    alert('💩');
+    // Implement search functionality
+}
 
 /**
  * Load and display materials

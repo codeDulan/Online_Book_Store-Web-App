@@ -501,6 +501,7 @@ async function downloadMaterial(materialId) {
 
 function performSearch() {
     console.log('Performing search...');
+    alert('💩');
     // Implement search functionality
 }
 
