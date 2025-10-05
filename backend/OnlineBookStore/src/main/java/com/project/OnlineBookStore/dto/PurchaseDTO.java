@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 @Setter
 public class PurchaseDTO {
     private Long id;
+    private UserDTO user;
     private MaterialDTO material;
     private Double purchasePrice;
     private LocalDateTime purchaseDate;

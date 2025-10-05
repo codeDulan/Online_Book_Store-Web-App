@@ -281,9 +281,7 @@
 
 /* Add Material Modal Styles */
 .add-modal-container {
-    width: 90vw;
     max-width: 600px;
-    height: auto;
     max-height: 850px;
     display: block;
     overflow-y: auto;
