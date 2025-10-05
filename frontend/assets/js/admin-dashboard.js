@@ -333,7 +333,6 @@ function displayMaterials(materials) {
                         <th>University</th>
                         <th>Course Module</th>
                         <th>Price (Rs.)</th>
-                        <th>Uploaded Date</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -345,7 +344,6 @@ function displayMaterials(materials) {
                             <td>${escapeHtml(material.university || 'N/A')}</td>
                             <td>${escapeHtml(material.courseModule || 'N/A')}</td>
                             <td>${(material.price || 0).toFixed(2)}</td>
-                            <td>${new Date(material.uploadedAt).toLocaleDateString()}</td>
                             <td>
                                 <div class="table-actions">
                                     <button class="btn btn-small btn-info" onclick="showMaterialInfo(${material.id})" title="View Details">
