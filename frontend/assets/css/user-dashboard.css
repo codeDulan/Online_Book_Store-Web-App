@@ -123,6 +123,28 @@
 }
 
 /**
+ * My Library Section
+ */
+.library-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.purchase-history-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.btn-viewAll:hover, .btn-back:hover {
+    background-color: var(--accent);
+    color: var(--white);
+    box-shadow: var(--shadow-md);
+
+}
+
+/**
  * Browse Materials Section
  */
 
@@ -323,6 +345,14 @@
 
 .btn-download:hover {
     background-color: #388e3c;
+}
+
+.btn-purchase {
+}
+
+.btn-purchase:hover {
+    transform: translateY(0);
+    box-shadow: none;
 }
 
 /**

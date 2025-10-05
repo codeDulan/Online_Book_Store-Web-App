@@ -36,12 +36,15 @@
 
     <!-- Main Dashboard Content -->
     <main class="main">
-        <div class="container">
+        <div class="container" id="mainWindow">
             <!-- My Library Section -->
             <section id="library" class="dashboard-section">
-                <div class="section-header">
-                    <h3>My Library</h3>
-                    <p>Your purchased materials</p>
+                <div class="section-header library-section">
+                    <div>
+                        <h3>My Library</h3>
+                        <p>Your recently purchased materials</p>
+                    </div>
+                    <button type="button" class="btn btn-viewAll" id="viewAllPurchasesBtn">View All &rAarr;</button>
                 </div>
 
                 <div class="materials-grid" id="userLibrary">
@@ -87,17 +90,6 @@
                 </div>
             </section>
 
-            <!-- My Purchases Section -->
-            <section id="purchases" class="dashboard-section">
-                <div class="section-header">
-                    <h3>Purchase History</h3>
-                    <p>View your past purchases history</p>
-                </div>
-
-                <div class="purchases-list" id="purchaseHistory">
-                    <!-- Purchase history will be populated by JavaScript -->
-                </div>
-            </section>
 
             <!-- Profile Section -->
             <section id="profile" class="dashboard-section">

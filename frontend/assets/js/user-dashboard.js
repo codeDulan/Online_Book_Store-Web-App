@@ -17,12 +17,12 @@ document.addEventListener('DOMContentLoaded', function () {
  * Initialize user dashboard functionality
  */
 function initializeUserDashboard() {
-    initializeUserMenu();
+    initializeUserMenu();    
     loadUserLibrary();
     loadBrowseMaterials();
-    loadPurchaseHistory();
     loadUserProfile();
     populateSelectOptions();
+    // loadPurchaseHistory();
 
     console.log('User dashboard initialized');
 }
@@ -79,9 +79,12 @@ async function loadUserLibrary() {
         const response = await authenticatedFetch('http://localhost:8080/api/purchases');
 
         if (response && response.ok) {
+            // console.log("Response:", response);               // Debug log
             const purchases = await response.json();
             console.log("User library purchases:", purchases);   // Debug log
-            displayUserLibrary(purchases);
+            const recentElements = purchases.slice(-4);          // Get the last 4 purchases
+            console.log("Recent purchases:", recentElements);    // Debug log
+            displayUserLibrary(recentElements);
         } else {
             console.error('Failed to load user library');
         }
@@ -106,6 +109,8 @@ function displayUserLibrary(purchases) {
         `;
         return;
     }
+
+    purchases.sort((a, b) => new Date(b.purchaseDate) - new Date(a.purchaseDate)); // Sort by purchase date descending
 
     // Display purchased materials
     libraryContainer.innerHTML = purchases.map(purchase => `
@@ -171,11 +176,9 @@ function displayBrowseMaterials(materials) {
                 <p class="material-courseModule">${material.courseModule || 'N/A'}</p>
                 <p class="material-price">Rs.${material.price || '0.00'}</p>
             </div>
-            <div class="material-actions">
-                ${material.purchased ?
-            `<button class="btn btn-download" onclick="downloadMaterial(${material.id})">Download</button>` :
-            `<button class="btn btn-primary" onclick="purchaseMaterial(${material.id})">Purchase</button>`
-        }
+            <div class="material-actions">${material.purchased ?
+                `<button class="btn btn-download" onclick="downloadMaterial(${material.id})">Download</button>` :
+                `<button class="btn btn-primary btn-purchase" onclick="purchaseMaterial(${material.id})">Purchase</button>`}
             </div>
         </div>
     `).join('');
@@ -381,6 +384,12 @@ function setupUserMenuEvents() {
  * Setup additional event listeners
  */
 function setupUserEventListeners() {
+    // View History functionality
+    const viewAllBtn = document.getElementById('viewAllPurchasesBtn');
+    if (viewAllBtn) {
+        viewAllBtn.addEventListener('click', navigateToPurchaseHistory);
+    }
+
     // Search functionality
     const searchBtn = document.getElementById('searchMaterialsBtn');
     if (searchBtn) {
@@ -703,3 +712,145 @@ async function authenticatedFetch(url, options = {}) {
 
     return response;
 }
+
+/**
+ * Navigate to purchase history
+ */
+
+function navigateToPurchaseHistory() {
+    const mainWindow = document.getElementById('mainWindow');
+
+    mainWindow.innerHTML = `
+    <section id="purchases" class="dashboard-section">
+        <div class="section-header purchase-history-section">
+            <div>
+                <h3>Purchase History</h3>
+                <p>View your past purchases history</p>
+            </div>
+            <button type="button" class="btn btn-back" id="backBtn">&lAarr; Back</button>
+        </div>
+        <div class="purchases-list" id="purchaseHistory">
+            <!-- Purchase history will be populated by JavaScript -->
+        </div>
+    </section>
+    `;
+
+    // Add to browser history
+    window.history.pushState({ view: 'purchase-history' }, '', '#purchases');
+
+    // Setup back button event listener
+    const backBtn = document.getElementById('backBtn');
+    if (backBtn) {
+        backBtn.addEventListener('click', navigateBack);
+    }
+
+    loadPurchaseHistory();
+}
+
+/**
+ * Render main dashboard view
+ */
+function renderMainDashboard() {
+    const mainWindow = document.getElementById('mainWindow');
+
+    mainWindow.innerHTML = `
+            <!-- My Library Section -->
+            <section id="library" class="dashboard-section">
+                <div class="section-header library-section">
+                    <div>
+                        <h3>My Library</h3>
+                        <p>Your purchased materials</p>
+                    </div>
+                    <button type="button" class="btn btn-viewAll" id="viewAllPurchasesBtn">View All &rAarr;</button>
+                </div>
+
+                <div class="materials-grid" id="userLibrary">
+                    <!-- User's purchased materials will be populated by JavaScript -->
+                </div>
+            </section>
+
+            <!-- Browse Materials Section -->
+            <section id="browse" class="dashboard-section">
+                <div class="section-header">
+                    <h3>Browse Materials</h3>
+                    <p>Discover and purchase new learning materials</p>
+                </div>
+
+                <!-- Search and Filter Controls -->
+                <div class="browse-controls">
+                    <div class="search-box">
+                        <input type="text" id="search-bar" placeholder="Search materials..." class="search-input">
+                        <button class="search-btn" id="searchMaterialsBtn">Search</button>
+                    </div>
+
+                    <div class="filter-controls">
+                        <select id="universityFilter" class="filter-select" aria-label="Filter by university">
+                            <option value="">All Universities</option>
+                            <!-- Universities will be populated by JavaScript -->
+                        </select>
+
+                        <select id="facultyFilter" class="filter-select" aria-label="Filter by faculty">
+                            <option value="">All Faculties</option>
+                            <!-- Faculties will be populated by JavaScript -->
+                        </select>
+                        <div class="filter-group">
+                            <label for="purchasedFilter" class="filter-label">Show Purchased Only</label>
+                            <input type="checkbox" id="purchasedFilter" class="filter-checkbox"
+                                aria-label="Show purchased materials only">
+                        </div>
+                        <button class="btn-clearFilters" id="clearFiltersBtn">Clear Filters</button>
+                    </div>
+                </div>
+
+                <div class="materials-grid" id="browseMaterials">
+                    <!-- Available materials will be populated by JavaScript -->
+                </div>
+            </section>
+
+
+            <!-- Profile Section -->
+            <section id="profile" class="dashboard-section">
+                <div class="section-header">
+                    <h3>Profile Settings</h3>
+                    <p>Manage your account information</p>
+                </div>
+
+                <div class="profile-content">
+                    <div class="profile-info" id="profileInfo">
+                        <!-- Profile information will be populated by JavaScript -->
+                        <div class="content-placeholder">
+                            <div class="placeholder-text" id="empty-profile-info">No Profile Information Available.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+    `;
+
+    // Re-initialize after rendering
+    initializeUserDashboard();
+    setupUserEventListeners();
+
+}
+
+/**
+ * Navigate back to main dashboard
+ */
+
+function navigateBack() {
+    // Go back in browser history
+    window.history.back();
+}
+
+/**
+ * Handle browser back/forward buttons
+ */
+window.addEventListener('popstate', function (event) {
+    if (event.state && event.state.view === 'purchase-history') {
+        // User went forward to purchase history
+        navigateToPurchaseHistory();
+    } else {
+        // User went back to main dashboard
+        renderMainDashboard();
+    }
+});
