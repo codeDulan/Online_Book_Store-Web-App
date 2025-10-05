@@ -1,0 +1,463 @@
+/* Modal Components Styles */
+
+/* Modal Overlay */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all var(--transition-normal);
+}
+
+.modal-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Modal Container */
+.modal-container {
+    background-color: var(--white);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    width: 90vw;    /* 90% of viewport width */
+    max-width: 1200px;
+    height: 85vh;   /* 85% of viewport height */
+    max-height: 800px;
+    display: flex;
+    position: relative;
+    transform: scale(0.8);
+    transition: transform var(--transition-normal);
+}
+
+.modal-overlay.show .modal-container {
+    transform: scale(1);
+}
+
+/* Modal Close Button */
+.modal-close {
+    position: absolute;
+    top: var(--spacing-md);
+    right: var(--spacing-md);
+    background: var(--gray);
+    color: var(--white);
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--font-size-2xl);
+    z-index: 1001;
+    transition: background-color var(--transition-fast);
+}
+
+.modal-close:hover {
+    background-color: #333333df;
+}
+
+/* Modal Left Section - PDF Preview */
+.modal-left {
+    flex: 1;
+    background-color: var(--light-gray);
+    border-radius: var(--radius-md) 0 0 var(--radius-md);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.pdf-preview {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-lg);
+}
+
+.pdf-iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    border-radius: var(--radius-md);
+}
+
+.pdf-placeholder {
+    text-align: center;
+    padding: var(--spacing-2xl);
+}
+
+.pdf-placeholder-icon {
+    font-size: 4rem;
+    margin-bottom: var(--spacing-lg);
+    opacity: 0.5;
+}
+
+.download-section {
+    padding: var(--spacing-md);
+    border-top: 1px solid var(--border);
+    background-color: var(--white);
+}
+
+.btn-download {
+    background-color: var(--success);
+    color: var(--white);
+    width: 100%;
+    border-radius: var(--radius-sm);
+}
+
+.btn-download:hover {
+    background-color: #388e3c;
+}
+
+/* Modal Right Section - Details */
+.modal-right {
+    flex: 0 0 400px;
+    padding: var(--spacing-xl) var(--spacing-lg) var(--spacing-md);
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.material-header {
+    margin-bottom: var(--spacing-sm);
+    /* padding-top: var(--spacing-lg); */
+}
+
+.material-id-title {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--text);
+    margin-bottom: var(--spacing-xs);
+}
+
+.material-price-display {
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--primary);
+    margin-bottom: var(--spacing-xs);
+}
+
+/* Material Details */
+.material-details {
+    flex: 1;
+    /* margin-bottom: var(--spacing-sm); */
+}
+
+.detail-group {
+    margin-bottom: var(--spacing-sm);
+}
+
+.detail-label {
+    font-size: var(--font-size-small);
+    font-weight: var(--font-weight-semibold);
+    color: var(--gray);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: var(--spacing-xs);
+}
+
+.detail-value {
+    font-size: var(--font-size-base);
+    color: var(--text);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    background-color: var(--light-gray);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    min-height: 20px;
+}
+
+.detail-value.editable {
+    width: 100%;
+    padding: var(--spacing-sm) var(--spacing-sm);
+    background-color: var(--white);
+    outline: none;
+    min-height: 20px;
+    transition: border-color var(--transition-fast);
+}
+
+.detail-value.editable:focus {
+    border-color: var(--gray);
+}
+
+/* Modal Actions */
+.modal-actions {
+    display: flex;
+    gap: var(--spacing-md);
+    padding-top: var(--spacing-md);
+    border-top: 1px solid var(--border);
+}
+
+.btn-delete {
+    background-color: var(--error);
+    color: var(--white);
+    flex: 1;
+    border-radius: var(--radius-sm);
+}
+
+.btn-delete:hover {
+    background-color: #d32f2f;
+}
+
+.btn-edit {
+    background-color: var(--accent);
+    color: var(--white);
+    flex: 1;
+    border-radius: var(--radius-sm);
+}
+
+.btn-edit:hover {
+    background-color: var(--primary);
+}
+
+.btn-save {
+    background-color: var(--success);
+    color: var(--white);
+    flex: 1;
+    border-radius: var(--radius-sm);
+}
+
+.btn-save:hover {
+    background-color: #388e3c;
+}
+
+.btn-cancel {
+    background-color: var(--gray);
+    color: var(--white);
+    flex: 1;
+    border-radius: var(--radius-sm);
+}
+
+.btn-cancel:hover {
+    background-color: #333333df;
+}
+
+/* File Upload in Edit Mode */
+.file-upload-section {
+    margin-bottom: var(--spacing-sm);
+    padding: var(--spacing-md);
+    border: 2px dashed var(--border);
+    border-radius: var(--radius-sm);
+    text-align: center;
+}
+
+.file-upload-section.has-file {
+    border-color: var(--success);
+    background-color: #4caf501a;
+}
+
+.file-input {
+    display: none;
+}
+
+.file-upload-btn {
+    background-color: var(--secondary);
+    color: var(--text);
+    cursor: pointer;
+    margin-bottom: var(--spacing-sm);
+    border-radius: var(--radius-sm);
+}
+
+.file-upload-btn:hover {
+    background-color: var(--primary);
+    color: var(--white);
+}
+
+.current-file {
+    font-size: var(--font-size-small);
+    color: var(--success);
+    font-weight: var(--font-weight-normal);
+}
+
+/* Add Material Modal Styles */
+.add-modal-container {
+    width: 90vw;
+    max-width: 600px;
+    height: auto;
+    max-height: 850px;
+    display: block;
+    overflow-y: auto;
+}
+
+.add-material-form {
+    padding: var(--spacing-lg) var(--spacing-2xl);
+}
+
+.form-header {
+    text-align: center;
+    margin-bottom: var(--spacing-sm);
+    padding-top: var(--spacing-sm);
+}
+
+.form-header h2 {
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--text);
+    margin-bottom: var(--spacing-xs);
+}
+
+.form-header p {
+    color: var(--gray);
+    margin: 0;
+}
+
+.form-group {
+    margin-bottom: var(--spacing-sm);
+}
+
+.form-group label {
+    display: block;
+    font-size: var(--font-size-small);
+    font-weight: var(--font-weight-semibold);
+    color: var(--gray);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: var(--spacing-xs);
+}
+
+.form-group .required-star {
+    color: var(--error);
+}
+
+.form-group input {
+    width: 100%;
+    padding: var(--spacing-sm);
+    border: 2px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-base);
+    font-family: inherit;
+    color: var(--text);
+    background-color: var(--white);
+    transition: border-color var(--transition-fast);
+    box-sizing: border-box;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--gray);
+}
+
+.form-group input.required:invalid {
+    border-color: var(--accent);
+}
+
+.form-group .form-error-message {
+    color: var(--error);
+    font-size: var(--font-size-small);
+    display: none;
+}
+
+/* File Upload Styling for Add Form */
+.add-file-upload {
+    border: 2px dashed var(--border);
+    border-radius: var(--radius-sm);
+    padding: var(--spacing-sm) var(--spacing-lg);
+    text-align: center;
+    background-color: var(--light-gray);
+    transition: all var(--transition-fast);
+}
+
+.add-file-upload.dragover {
+    border-color: var(--primary);
+    background-color: rgba(197, 135, 93, 0.1);
+}
+
+.add-file-upload.has-file {
+    border-color: var(--success);
+    background-color: rgba(76, 175, 80, 0.1);
+}
+
+.file-upload-area {
+    cursor: pointer;
+}
+
+.file-upload-icon {
+    font-size: 2rem;
+    margin-bottom: var(--spacing-sm);
+    color: var(--gray);
+}
+
+.file-upload-text {
+    color: var(--gray);
+    margin-bottom: var(--spacing-sm);
+}
+
+.file-selected-text {
+    color: var(--success);
+    font-weight: var(--font-weight-medium);
+}
+
+.form-actions {
+    display: flex;
+    gap: var(--spacing-md);
+}
+
+.form-actions .btn {
+    flex: 1;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .modal-container {
+        width: 95vw;
+        height: 90vh;
+        flex-direction: column;
+    }
+    
+    .modal-left {
+        flex: 0 0 50%;
+        border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    }
+    
+    .modal-right {
+        flex: 1;
+        border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+        padding: var(--spacing-lg) var(--spacing-md) var(--spacing-md);
+    }
+    
+    .modal-actions {
+        flex-direction: column;
+    }
+    
+    .add-modal-container {
+        width: 95vw;
+        height: 90vh;
+    }
+    
+    .add-material-form {
+        padding: var(--spacing-lg);
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 480px) {
+    .modal-container {
+        width: 100vw;
+        height: 100vh;
+        border-radius: 0;
+    }
+    
+    .modal-left,
+    .modal-right {
+        border-radius: 0;
+    }
+    
+    .add-modal-container {
+        width: 100vw;
+        height: 100vh;
+        border-radius: 0;
+    }
+}

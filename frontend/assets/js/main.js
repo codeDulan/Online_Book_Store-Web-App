@@ -6,6 +6,37 @@
 // Global variables
 let currentUser = null;
 
+// API Configuration
+const API_BASE_URL = 'http://localhost:8080/api';
+const API_ENDPOINTS = {
+    // Authentication
+    LOGIN: `${API_BASE_URL}/auth/login`,
+    REGISTER: `${API_BASE_URL}/auth/register`,
+    LOGOUT: `${API_BASE_URL}/auth/logout`,
+    PROFILE: `${API_BASE_URL}/user/profile`,
+    
+    // Materials (User endpoints)
+    USER_MATERIALS: `${API_BASE_URL}/user/materials`,
+    USER_MATERIAL: (id) => `${API_BASE_URL}/user/materials/${id}`,
+    SEARCH_BY_UNIVERSITY: (university) => `${API_BASE_URL}/user/materials/search/university/${university}`,
+    SEARCH_BY_FACULTY: (faculty) => `${API_BASE_URL}/user/materials/search/faculty/${faculty}`,
+    
+    // Materials (General endpoints)
+    MATERIALS: `${API_BASE_URL}/materials`,
+    MATERIAL: (id) => `${API_BASE_URL}/materials/${id}`,
+    MATERIAL_DOWNLOAD: (id) => `${API_BASE_URL}/materials/${id}/download`,
+    
+    // Purchase endpoints
+    PURCHASE_MATERIAL: (id) => `${API_BASE_URL}/materials/${id}/purchase`,
+    CHECK_PURCHASED: (id) => `${API_BASE_URL}/materials/${id}/purchased`,
+    USER_PURCHASES: `${API_BASE_URL}/purchases`,
+    
+    // Admin endpoints
+    ADMIN_MATERIALS: `${API_BASE_URL}/admin/materials`,
+    ADMIN_MATERIAL: (id) => `${API_BASE_URL}/admin/materials/${id}`,
+    ADMIN_PURCHASES: `${API_BASE_URL}/admin/purchases`
+};
+
 // Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
     initializeApp();
@@ -179,15 +210,237 @@ function initializeBookInteractions() {
  */
 function checkUserSession() {
     const userData = sessionStorage.getItem('user');
-    
-    if (userData) {
+    const token = sessionStorage.getItem('authToken');
+
+    if (userData && token) {
         try {
-            currentUser = JSON.parse(userData);
-            updateUIForLoggedInUser();
+            // Validate JWT token
+            if (isTokenValid(token)) {
+                currentUser = JSON.parse(userData);
+                
+                // Check if user should be redirected to their dashboard
+                if (shouldRedirectToDashboard()) {
+                    redirectBasedOnRole(currentUser.role);
+                    return;
+                }
+                
+                updateUIForLoggedInUser();
+            } else {
+                // Token expired, clear session data
+                console.log('Token expired, clearing session data');
+                clearAuthData();
+                currentUser = null;
+            }
         } catch (error) {
-            console.error('Error parsing user data:', error);
-            sessionStorage.removeItem('user');
+            console.error('Error parsing user data or validating token:', error);
+            clearAuthData();
+            currentUser = null;
         }
+    }
+}
+
+/**
+ * Check if user should be redirected to their dashboard
+ * @returns {boolean} - Whether to redirect to dashboard
+ */
+function shouldRedirectToDashboard() {
+    // Check if we're on the homepage and user is logged in
+    const currentPath = window.location.pathname;
+    const isHomepage = currentPath.endsWith('index.html') || currentPath.endsWith('/');
+    
+    // Only redirect from homepage, not from login page or other pages
+    return isHomepage && currentUser && currentUser.role;
+}
+
+/**
+ * Redirect user based on their role
+ * @param {string} role - User role (ROLE_ADMIN or ROLE_USER)
+ */
+function redirectBasedOnRole(role) {
+    if (role === 'ROLE_ADMIN') {
+        window.location.href = 'pages/dashboards/admin.html';
+    } else if (role === 'ROLE_USER') {
+        window.location.href = 'pages/dashboards/user.html';
+    }
+    // If role is unknown, stay on current page
+}
+
+/**
+ * Utility function to validate JWT token (client-side check)
+ * @param {string} token - JWT token to validate
+ * @returns {boolean} - Whether token appears valid
+ */
+function isTokenValid(token) {
+    if (!token) return false;
+    
+    try {
+        // Basic JWT structure check (header.payload.signature)
+        const parts = token.split('.');
+        if (parts.length !== 3) return false;
+        
+        // Decode payload to check expiration
+        const payload = JSON.parse(atob(parts[1]));
+        const currentTime = Math.floor(Date.now() / 1000);
+        
+        // Check if token is expired (with 5 minute buffer)
+        return payload.exp && payload.exp > (currentTime + 300);
+    } catch (error) {
+        console.error('Error validating token:', error);
+        return false;
+    }
+}
+
+/**
+ * Clear authentication data
+ */
+function clearAuthData() {
+    sessionStorage.removeItem('user');
+    sessionStorage.removeItem('authToken');
+}
+
+/**
+ * Get authorization headers for API calls
+ * @returns {Object} - Headers object with Authorization header
+ */
+function getAuthHeaders() {
+    const token = sessionStorage.getItem('authToken');
+    const headers = {
+        'Content-Type': 'application/json'
+    };
+    
+    if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+    }
+    
+    return headers;
+}
+
+/**
+ * Make an authenticated API request
+ * @param {string} url - API endpoint URL
+ * @param {Object} options - Fetch options
+ * @returns {Promise} - Fetch promise
+ */
+async function authenticatedFetch(url, options = {}) {
+    const headers = getAuthHeaders();
+    
+    const config = {
+        ...options,
+        headers: {
+            ...headers,
+            ...(options.headers || {})
+        }
+    };
+    
+    const response = await fetch(url, config);
+    
+    // Handle token expiration
+    if (response.status === 401) {
+        console.log('Authentication failed, redirecting to login');
+        clearAuthData();
+        currentUser = null;
+        window.location.href = 'pages/login.html';
+        return;
+    }
+    
+    return response;
+}
+
+/**
+ * API Service Functions
+ */
+
+/**
+ * Fetch user materials (requires authentication)
+ * @returns {Promise<Array>} - Array of material objects
+ */
+async function fetchUserMaterials() {
+    try {
+        const response = await authenticatedFetch(API_ENDPOINTS.USER_MATERIALS);
+        if (response && response.ok) {
+            return await response.json();
+        }
+        throw new Error('Failed to fetch materials');
+    } catch (error) {
+        console.error('Error fetching user materials:', error);
+        throw error;
+    }
+}
+
+/**
+ * Purchase a material (requires authentication)
+ * @param {number} materialId - ID of the material to purchase
+ * @returns {Promise<Object>} - Purchase response data
+ */
+async function purchaseMaterial(materialId) {
+    try {
+        const response = await authenticatedFetch(API_ENDPOINTS.PURCHASE_MATERIAL(materialId), {
+            method: 'POST'
+        });
+        
+        if (response && response.ok) {
+            return await response.json();
+        }
+        
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to purchase material');
+    } catch (error) {
+        console.error('Error purchasing material:', error);
+        throw error;
+    }
+}
+
+/**
+ * Check if user has purchased a material (requires authentication)
+ * @param {number} materialId - ID of the material to check
+ * @returns {Promise<boolean>} - Whether the material is purchased
+ */
+async function checkMaterialPurchased(materialId) {
+    try {
+        const response = await authenticatedFetch(API_ENDPOINTS.CHECK_PURCHASED(materialId));
+        if (response && response.ok) {
+            const data = await response.json();
+            return data.purchased;
+        }
+        return false;
+    } catch (error) {
+        console.error('Error checking purchase status:', error);
+        return false;
+    }
+}
+
+/**
+ * Fetch user's purchase history (requires authentication)
+ * @returns {Promise<Array>} - Array of purchase objects
+ */
+async function fetchUserPurchases() {
+    try {
+        const response = await authenticatedFetch(API_ENDPOINTS.USER_PURCHASES);
+        if (response && response.ok) {
+            return await response.json();
+        }
+        throw new Error('Failed to fetch purchases');
+    } catch (error) {
+        console.error('Error fetching user purchases:', error);
+        throw error;
+    }
+}
+
+/**
+ * Download a material (requires authentication and purchase)
+ * @param {number} materialId - ID of the material to download
+ * @returns {Promise<Blob>} - Material file blob
+ */
+async function downloadMaterial(materialId) {
+    try {
+        const response = await authenticatedFetch(API_ENDPOINTS.MATERIAL_DOWNLOAD(materialId));
+        if (response && response.ok) {
+            return await response.blob();
+        }
+        throw new Error('Failed to download material');
+    } catch (error) {
+        console.error('Error downloading material:', error);
+        throw error;
     }
 }
 
@@ -198,135 +451,94 @@ function updateUIForLoggedInUser() {
     const loginBtn = document.getElementById('loginBtn');
     
     if (loginBtn && currentUser) {
-        // Create user menu
-        const userMenu = createUserMenu();
-        loginBtn.parentNode.replaceChild(userMenu, loginBtn);
+        // Replace login button with simple user info
+        loginBtn.textContent = `Welcome, ${currentUser.fullName}`;
+        loginBtn.style.cursor = 'default';
+        loginBtn.style.textDecoration = 'none';
         
         console.log(`Welcome back, ${currentUser.fullName}!`);
     }
 }
 
+
+
 /**
- * Create user menu for logged-in users
- * @returns {HTMLElement} User menu element
+ * Handle user menu actions
  */
-function createUserMenu() {
-    const userMenu = document.createElement('div');
-    userMenu.className = 'user-menu';
-    userMenu.innerHTML = `
-        <div class="user-info">
-            <span class="user-name">Welcome, ${currentUser.fullName}</span>
-            <div class="user-dropdown">
-                <button class="btn btn-outline" id="userMenuBtn">
-                    Account ▼
-                </button>
-                <div class="dropdown-menu" id="userDropdown">
-                    <a href="#" class="dropdown-item" id="profileLink">Profile</a>
-                    <a href="#" class="dropdown-item" id="ordersLink">My Orders</a>
-                    <a href="#" class="dropdown-item" id="logoutLink">Logout</a>
-                </div>
-            </div>
-        </div>
-    `;
 
-    // Add styles for user menu
-    const style = document.createElement('style');
-    style.textContent = `
-        .user-menu {
-            position: relative;
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-md);
+/**
+ * Handle profile link click
+ */
+async function handleProfileClick() {
+    try {
+        const response = await authenticatedFetch(API_ENDPOINTS.PROFILE);
+        if (response && response.ok) {
+            const profileData = await response.json();
+            alert(`Profile Info:\nName: ${profileData.fullName}\nEmail: ${profileData.email}\nRole: ${profileData.role}`);
+        } else {
+            alert('Failed to load profile data');
         }
-        
-        .user-name {
-            font-size: var(--font-size-small);
-            color: var(--text);
-            font-weight: var(--font-weight-medium);
-        }
-        
-        .user-dropdown {
-            position: relative;
-        }
-        
-        .dropdown-menu {
-            position: absolute;
-            top: 100%;
-            right: 0;
-            background: var(--white);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-md);
-            box-shadow: var(--shadow-lg);
-            min-width: 150px;
-            display: none;
-            z-index: 1000;
-        }
-        
-        .dropdown-menu.show {
-            display: block;
-        }
-        
-        .dropdown-item {
-            display: block;
-            padding: var(--spacing-sm) var(--spacing-md);
-            color: var(--text);
-            text-decoration: none;
-            transition: background-color var(--transition-fast);
-        }
-        
-        .dropdown-item:hover {
-            background-color: var(--light-gray);
-        }
-    `;
-    
-    if (!document.getElementById('userMenuStyles')) {
-        style.id = 'userMenuStyles';
-        document.head.appendChild(style);
+    } catch (error) {
+        console.error('Error fetching profile:', error);
+        alert('Error loading profile. Please try again.');
     }
+}
 
-    // Add event listeners
-    setTimeout(() => {
-        const userMenuBtn = document.getElementById('userMenuBtn');
-        const userDropdown = document.getElementById('userDropdown');
-        const logoutLink = document.getElementById('logoutLink');
-        const profileLink = document.getElementById('profileLink');
-        const ordersLink = document.getElementById('ordersLink');
-
-        if (userMenuBtn && userDropdown) {
-            userMenuBtn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                userDropdown.classList.toggle('show');
+/**
+ * Handle purchases link click
+ */
+async function handlePurchasesClick() {
+    try {
+        const purchases = await fetchUserPurchases();
+        if (purchases.length > 0) {
+            let purchasesList = 'Your Purchases:\n\n';
+            purchases.forEach((purchase, index) => {
+                purchasesList += `${index + 1}. ${purchase.materialTitle || 'Material'} - Purchased on ${new Date(purchase.purchaseDate).toLocaleDateString()}\n`;
             });
-
-            // Close dropdown when clicking outside
-            document.addEventListener('click', function() {
-                userDropdown.classList.remove('show');
-            });
+            alert(purchasesList);
+        } else {
+            alert('You have no purchases yet.');
         }
+    } catch (error) {
+        console.error('Error fetching purchases:', error);
+        alert('Error loading purchases. Please try again.');
+    }
+}
 
-        if (logoutLink) {
-            logoutLink.addEventListener('click', function(e) {
-                e.preventDefault();
-                handleLogout();
-            });
+/**
+ * Handle admin materials link click
+ */
+async function handleAdminMaterialsClick() {
+    try {
+        const response = await authenticatedFetch(API_ENDPOINTS.MATERIALS);
+        if (response && response.ok) {
+            const materials = await response.json();
+            alert(`Admin Materials Management\n\nTotal Materials: ${materials.length}\n\n(Full admin interface coming in future updates)`);
+        } else {
+            alert('Failed to load materials data');
         }
+    } catch (error) {
+        console.error('Error fetching admin materials:', error);
+        alert('Error loading materials. Please try again.');
+    }
+}
 
-        if (profileLink) {
-            profileLink.addEventListener('click', function(e) {
-                e.preventDefault();
-                alert('Profile page coming soon in Phase 2!');
-            });
+/**
+ * Handle admin purchases link click
+ */
+async function handleAdminPurchasesClick() {
+    try {
+        const response = await authenticatedFetch(API_ENDPOINTS.ADMIN_PURCHASES);
+        if (response && response.ok) {
+            const allPurchases = await response.json();
+            alert(`Admin Purchases Overview\n\nTotal Purchases: ${allPurchases.length}\n\n(Full admin interface coming in future updates)`);
+        } else {
+            alert('Failed to load purchases data');
         }
-
-        if (ordersLink) {
-            ordersLink.addEventListener('click', function(e) {
-                e.preventDefault();
-                alert('Orders page coming soon in Phase 4!');
-            });
-        }
-    }, 0);
-
-    return userMenu;
+    } catch (error) {
+        console.error('Error fetching admin purchases:', error);
+        alert('Error loading admin data. Please try again.');
+    }
 }
 
 /**
@@ -563,9 +775,16 @@ async function handleLogout() {
     }
     
     try {
-        // Call logout API
+        // Get JWT token from session storage
+        const token = sessionStorage.getItem('authToken');
+        
+        // Call logout API with JWT token
         await fetch('http://localhost:8080/api/auth/logout', {
             method: 'POST',
+            headers: {
+                'Authorization': token ? `Bearer ${token}` : '',
+                'Content-Type': 'application/json'
+            },
             credentials: 'include'
         });
     } catch (error) {
@@ -573,6 +792,7 @@ async function handleLogout() {
     } finally {
         // Clear session data and reload page
         sessionStorage.removeItem('user');
+        sessionStorage.removeItem('authToken');
         currentUser = null;
         location.reload();
     }

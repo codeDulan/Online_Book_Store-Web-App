@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - EDURA Online Book Store</title>
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="../../assets/css/variables.css">
+    <link rel="stylesheet" href="../../assets/css/base.css">
+    <link rel="stylesheet" href="../../assets/css/dashboard.css">
+    <link rel="stylesheet" href="../../assets/css/modal.css">
+</head>
+
+<body>
+    <!-- Header Section -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <!-- Logo and Brand Name -->
+                <div class="brand">
+                    <img src="../../assets/images/logo.png" alt="EDURA Logo" class="brand-logo">
+                    <h1 class="brand-name">EDURA</h1>
+                </div>
+
+                <!-- User Menu -->
+                <div class="header-actions">
+                    <div class="user-menu" id="adminUserMenu">
+                        <!-- User menu will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Dashboard Content -->
+    <main class="main">
+        <div class="container">
+            <!-- Dashboard Header -->
+            <div class="dashboard-header">
+                <div class="dashboard-actions">
+                    <div class="search-box">
+                        <input type="text" id="search-bar" placeholder="Search materials..."
+                            aria-label="Search materials" class="search-input">
+                        <button class="search-btn" id="searchMaterialsBtn">Search</button>
+                    </div>
+                    <button type="button" class="btn btn-add-material" id="addMaterialBtn">Add Material</button>
+                </div>
+            </div>
+
+            <!-- Materials Section -->
+            <div class="materials-section">
+                <!-- Materials List Container -->
+                <div class="materials-container" id="materialsContainer">
+                    <div class="loading-message" id="loadingMessage">Loading materials...</div>
+                    <div class="error-message hidden" id="errorMessage">Failed to load materials. Please try again.</div>
+                    
+                    <!-- Materials List -->
+                    <div class="materials-list hidden" id="materialsList">
+                        <!-- Materials will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <p>&copy; 2024 EDURA Online Book Store. All rights reserved.</p>
+                <div class="footer-links">
+                    <a href="#" class="footer-link">Help</a>
+                    <a href="#" class="footer-link">Support</a>
+                    <a href="#" class="footer-link">Terms</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Material Details Modal -->
+    <div class="modal-overlay" id="materialModal">
+        <div class="modal-container">
+            <button class="modal-close" id="modalClose">&times;</button>
+            
+            <!-- Left Section - PDF Preview -->
+            <div class="modal-left">
+                <div class="pdf-preview" id="pdfPreview">
+                    <!-- PDF content will be loaded here -->
+                </div>
+                <div class="download-section">
+                    <button class="btn btn-download" id="downloadBtn">
+                        <strong>&DownArrowBar;</strong> Download Material
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Right Section - Details -->
+            <div class="modal-right">
+                <div class="material-header">
+                    <div class="material-id-title" id="modalMaterialTitle">
+                        <!-- Title will be populated -->
+                    </div>
+                    <div class="material-price-display" id="modalMaterialPrice">
+                        <!-- Price will be populated -->
+                    </div>
+                </div>
+                
+                <div class="material-details" id="materialDetailsContainer">
+                    <!-- Details will be populated -->
+                </div>
+                
+                <div class="modal-actions" id="modalActions">
+                    <!-- Action buttons will be populated -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Material Modal -->
+    <div class="modal-overlay" id="addMaterialModal">
+        <div class="modal-container add-modal-container">
+            <button class="modal-close" id="addModalClose">&times;</button>
+            
+            <!-- Add Material Form -->
+            <div class="add-material-form">
+                <div class="form-header">
+                    <h2>Add New Material</h2>
+                    <p>Fill in the details to add a new learning material</p>
+                </div>
+                
+                <div class="form-content" id="addMaterialFormContent">
+                    <!-- Form fields will be populated by JavaScript -->
+                </div>
+                
+                <div class="form-actions">
+                    <button class="btn btn-cancel" id="clearBtn">
+                        Clear
+                    </button>
+                    <button class="btn btn-save" id="addMaterialFormBtn">
+                        Add Material
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../../assets/js/auth.js"></script>
+    <script src="../../assets/js/admin-dashboard.js"></script>
+</body>
+
+</html>
