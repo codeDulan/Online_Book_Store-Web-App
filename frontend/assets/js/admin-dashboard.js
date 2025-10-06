@@ -124,9 +124,9 @@ function initializeUserMenu() {
 function pupulateAdminUserMenu(container) {
     // Create menu items for admin
     const menuItems = [
-        '<a href="#" class="dropdown-item" id="adminProfileLink">Profile</a>', // This should link to the admin profile page
-        '<a href="#" class="dropdown-item" id="usersLink">Users</a>', // This should link to the users page
-        '<a href="#" class="dropdown-item" id="adminPurchasesLink">Purchases</a>', // This should link to the purchases page
+        '<a href="#profile" class="dropdown-item" id="adminProfileLink">Profile</a>', // This should link to the admin profile page
+        '<a href="#users" class="dropdown-item" id="usersLink">Users</a>', // This should link to the users page
+        '<a href="#purchases" class="dropdown-item" id="adminPurchasesLink">Purchases</a>', // This should link to the purchases page
         '<a href="#" class="dropdown-item" id="adminLogoutLink">Logout</a>'
     ];
 
@@ -155,6 +155,9 @@ function pupulateAdminUserMenu(container) {
 function setupUserMenuEvents() {
     const menuBtn = document.getElementById('adminMenuBtn');
     const dropdown = document.getElementById('adminDropdown');
+    const profileLink = document.getElementById('adminProfileLink');
+    const usersLink = document.getElementById('usersLink');
+    const purchasesLink = document.getElementById('adminPurchasesLink');
     const logoutLink = document.getElementById('adminLogoutLink');
 
     if (menuBtn && dropdown) {
@@ -169,6 +172,30 @@ function setupUserMenuEvents() {
         });
     }
 
+    // Profile View
+    if (profileLink) {
+        profileLink.addEventListener('click', function (e) {
+            e.preventDefault();
+            navigateToProfileView();
+        });
+    }
+
+    // Users View
+    if (usersLink) {
+        usersLink.addEventListener('click', function (e) {
+            e.preventDefault();
+            navigateToUsersList();
+        });
+    }
+    // Purchases View
+    if (purchasesLink) {
+        purchasesLink.addEventListener('click', function (e) {
+            e.preventDefault();
+            navigateToPurchasesList();
+        });
+    }
+
+    // Logout
     if (logoutLink) {
         logoutLink.addEventListener('click', function (e) {
             e.preventDefault();
@@ -1234,3 +1261,159 @@ function validateAddMaterialForm() {
     
     return isValid;
 }
+
+
+/**
+ * Navigate to profile details view
+ */
+
+function navigateToProfileView() {
+    const mainWindow = document.getElementById('mainWindow');
+
+    mainWindow.innerHTML = `
+    <!-- Profile Section -->
+    <section id="profile" class="dashboard-section">
+        <div class="section-header profile-header-section">
+            <div>
+                <h3>Profile Settings</h3>
+                <p>Manage your account information</p>
+            </div>
+            <button type="button" class="btn btn-back" id="backBtn">&lAarr; Back to Dashboard</button>
+        </div>
+
+        <div class="profile-content">
+            <div class="profile-info" id="profileInfo">
+                <!-- Profile information will be populated by JavaScript -->
+                <div class="content-placeholder">
+                    <div class="placeholder-text" id="empty-profile-info">No Profile Information Available.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+    `;
+
+    // Add to browser history
+    window.history.pushState({ view: 'profile' }, '', '#profile');
+
+    // Setup back button event listener
+    const backBtn = document.getElementById('backBtn');
+    if (backBtn) {
+        backBtn.addEventListener('click', navigateBack);
+    }
+
+    loadUserProfile();
+}
+
+/**
+ * Load user profile
+ */
+async function loadUserProfile() {
+    try {
+        const response = await authenticatedFetch('http://localhost:8080/api/user/profile');
+
+        if (response && response.ok) {
+            const profileData = await response.json();
+            console.log("Profile data: ", profileData); // Debug log
+            displayUserProfile(profileData);
+        } else {
+            console.error('Failed to load user profile');
+        }
+    } catch (error) {
+        console.error('Error loading user profile:', error);
+    }
+}
+
+/**
+ * Display user profile
+ * @param {Object} profileData - User profile data
+ */
+function displayUserProfile(profileData) {
+    const profileContainer = document.getElementById('profileInfo');
+
+    profileContainer.innerHTML = `
+        <div class="profile-section">
+            <h4>Personal Information</h4>
+            <div class="profile-field">
+                <label><strong>Full Name:</strong></label>
+                <span>${profileData.fullName}</span>
+            </div>
+            <div class="profile-field">
+                <label><strong>Email:</strong></label>
+                <span>${profileData.email}</span>
+            </div>
+            <div class="profile-field">
+                <label><strong>Role:</strong></label>
+                <span>${profileData.role === 'ROLE_USER' ? 'User' : 'Admin'}</span>
+            </div>
+        </div>
+    `;
+}
+
+function renderMainDashboard() {
+    const mainWindow = document.getElementById('mainWindow');
+
+    mainWindow.innerHTML = `
+            <!-- Profile section will be loaded here by JavaScript -->
+            <!-- Users section will be loaded here by JavaScript -->
+            <!-- Purchase history section will be loaded here by JavaScript -->
+
+            <!-- Dashboard Header -->
+            <div class="dashboard-header">
+                <div class="dashboard-actions">
+                    <div class="search-box">
+                        <input type="text" id="search-bar" placeholder="Search materials..." class="search-input">
+                        <button type="button" class="btn btn-clear-search" id="clearSearchBtn">&Cross;</button>
+                        <button class="search-btn" id="searchMaterialsBtn">Search</button>
+                    </div>
+                    <button type="button" class="btn btn-add-material" id="addMaterialBtn">Add Material</button>
+                </div>
+            </div>
+
+            <!-- Materials Section -->
+            <div class="materials-section">
+                <!-- Materials List Container -->
+                <div class="materials-container" id="materialsContainer">
+                    <div class="loading-message" id="loadingMessage">Loading materials...</div>
+                    <div class="error-message hidden" id="errorMessage">Failed to load materials. Please try again.</div>
+
+                    <!-- Materials List -->
+                    <div class="materials-list hidden" id="materialsList">
+                        <!-- Materials will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+    `;
+
+    // Re-initialize after rendering
+    // First set up event listeners
+    setupAdminEventListeners();
+    initializeAddMaterialModal();
+    // Then load materials
+    loadMaterials();
+}
+
+/**
+ * Navigate back to main dashboard
+ */
+
+function navigateBack() {
+    // Go back in browser history
+    window.history.back();
+}
+
+/**
+ * Handle browser back/forward buttons
+ */
+window.addEventListener('popstate', function (event) {
+    // if (event.state && event.state.view === 'profile') {
+    //     navigateToProfileView();
+    // } else if (event.state && event.state.view === 'purchase-history') {
+    //     navigateToPurchaseHistory();
+    // } else if (event.state && event.state.view === 'users') {
+    //     navigateToUsersList();
+    // } else {
+    //     // No state or unknown state, render main dashboard
+    //     renderMainDashboard();
+    // }
+    renderMainDashboard();
+});

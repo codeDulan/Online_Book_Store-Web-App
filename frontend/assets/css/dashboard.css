@@ -322,6 +322,84 @@
 }
 
 /**
+ * Window for Profile, Users and Purchases
+ */
+.dashboard-section {
+    background-color: var(--background);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-lg);
+    box-shadow: var(--shadow-sm);
+    margin-bottom: var(--spacing-xs);
+}
+
+.section-header {
+    border-bottom: 1px solid var(--border);
+    padding-bottom: var(--spacing-xs);
+    margin-bottom: var(--spacing-sm);
+}
+
+.section-header h3 {
+    margin-bottom: var(--spacing-xs);
+}
+
+.section-header p {
+    color: var(--gray);
+    margin: 0;
+}
+
+/**
+ * Profile Settings Section
+ */
+.profile-header-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.btn-back:hover {
+    background-color: var(--accent);
+    color: var(--white);
+    box-shadow: var(--shadow-md);
+
+}
+
+.profile-content {
+    background-color: var(--white);
+    border-radius: var(--radius-sm);
+    padding: var(--spacing-lg);
+    border: 1px solid var(--border);
+}
+
+.profile-section h4 {
+    color: var(--text);
+    padding-bottom: var(--spacing-xs);
+    border-bottom: 1px solid var(--border);
+    margin-bottom: var(--spacing-sm);
+}
+
+.profile-field {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-sm) 0;
+    border-bottom: 1px solid var(--light-gray);
+}
+
+.profile-field:last-child {
+    border-bottom: none;
+}
+
+.profile-field label {
+    color: var(--gray);
+    font-size: var(--font-size-base);
+}
+
+.profile-field span {
+    color: var(--text);
+    font-weight: var(--font-weight-medium);
+}
+
+/**
  * Dashboard Footer
  */
 .footer-content {

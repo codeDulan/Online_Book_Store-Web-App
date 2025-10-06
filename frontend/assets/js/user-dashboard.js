@@ -357,7 +357,7 @@ function displayUserProfile(profileData) {
             </div>
             <div class="profile-field">
                 <label><strong>Role:</strong></label>
-                <span>${profileData.role === 'ROLE_USER' ? 'User' : profileData.role}</span>
+                <span>${profileData.role === 'ROLE_USER' ? 'User' : 'Admin'}</span>
             </div>
         </div>
     `;
