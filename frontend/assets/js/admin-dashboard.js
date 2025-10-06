@@ -124,9 +124,9 @@ function initializeUserMenu() {
 function pupulateAdminUserMenu(container) {
     // Create menu items for admin
     const menuItems = [
-        '<a href="#" class="dropdown-item" id="adminProfileLink">Profile</a>', // This should link to the admin profile page
-        '<a href="#" class="dropdown-item" id="usersLink">Users</a>', // This should link to the users page
-        '<a href="#" class="dropdown-item" id="adminPurchasesLink">Purchases</a>', // This should link to the purchases page
+        '<a href="#profile" class="dropdown-item" id="adminProfileLink">Profile</a>', // This should link to the admin profile page
+        '<a href="#users" class="dropdown-item" id="usersLink">Users</a>', // This should link to the users page
+        '<a href="#purchases" class="dropdown-item" id="adminPurchasesLink">Purchases</a>', // This should link to the purchases page
         '<a href="#" class="dropdown-item" id="adminLogoutLink">Logout</a>'
     ];
 
@@ -155,6 +155,9 @@ function pupulateAdminUserMenu(container) {
 function setupUserMenuEvents() {
     const menuBtn = document.getElementById('adminMenuBtn');
     const dropdown = document.getElementById('adminDropdown');
+    const profileLink = document.getElementById('adminProfileLink');
+    const usersLink = document.getElementById('usersLink');
+    const purchasesLink = document.getElementById('adminPurchasesLink');
     const logoutLink = document.getElementById('adminLogoutLink');
 
     if (menuBtn && dropdown) {
@@ -169,6 +172,30 @@ function setupUserMenuEvents() {
         });
     }
 
+    // Profile View
+    if (profileLink) {
+        profileLink.addEventListener('click', function (e) {
+            e.preventDefault();
+            navigateToProfileView();
+        });
+    }
+
+    // Users View
+    if (usersLink) {
+        usersLink.addEventListener('click', function (e) {
+            e.preventDefault();
+            navigateToUsersList();
+        });
+    }
+    // Purchases View
+    if (purchasesLink) {
+        purchasesLink.addEventListener('click', function (e) {
+            e.preventDefault();
+            navigateToPurchasesList();
+        });
+    }
+
+    // Logout
     if (logoutLink) {
         logoutLink.addEventListener('click', function (e) {
             e.preventDefault();
@@ -1234,3 +1261,403 @@ function validateAddMaterialForm() {
     
     return isValid;
 }
+
+
+/**
+ * Navigate to profile details view
+ */
+
+function navigateToProfileView() {
+    const mainWindow = document.getElementById('mainWindow');
+
+    mainWindow.innerHTML = `
+    <!-- Profile Section -->
+    <section id="profile" class="dashboard-section">
+        <div class="section-header profile-header-section">
+            <div>
+                <h3>Profile Settings</h3>
+                <p>Manage your account information</p>
+            </div>
+            <button type="button" class="btn btn-back" id="backBtn">&lAarr; Back to Dashboard</button>
+        </div>
+
+        <div class="profile-content">
+            <div class="profile-info" id="profileInfo">
+                <!-- Profile information will be populated by JavaScript -->
+                <div class="content-placeholder">
+                    <div class="placeholder-text" id="empty-profile-info">No Profile Information Available.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+    `;
+
+    // Add to browser history
+    window.history.pushState({ view: 'profile' }, '', '#profile');
+
+    // Setup back button event listener
+    const backBtn = document.getElementById('backBtn');
+    if (backBtn) {
+        backBtn.addEventListener('click', navigateBack);
+    }
+
+    loadUserProfile();
+}
+
+/**
+ * Load user profile
+ */
+async function loadUserProfile() {
+    try {
+        const response = await authenticatedFetch('http://localhost:8080/api/user/profile');
+
+        if (response && response.ok) {
+            const profileData = await response.json();
+            console.log("Profile data: ", profileData); // Debug log
+            displayUserProfile(profileData);
+        } else {
+            console.error('Failed to load user profile');
+        }
+    } catch (error) {
+        console.error('Error loading user profile:', error);
+    }
+}
+
+/**
+ * Display user profile
+ * @param {Object} profileData - User profile data
+ */
+function displayUserProfile(profileData) {
+    const profileContainer = document.getElementById('profileInfo');
+
+    profileContainer.innerHTML = `
+        <div class="profile-section">
+            <h4>Personal Information</h4>
+            <div class="profile-field">
+                <label><strong>Full Name:</strong></label>
+                <span>${profileData.fullName}</span>
+            </div>
+            <div class="profile-field">
+                <label><strong>Email:</strong></label>
+                <span>${profileData.email}</span>
+            </div>
+            <div class="profile-field">
+                <label><strong>Role:</strong></label>
+                <span>${profileData.role === 'ROLE_USER' ? 'User' : 'Admin'}</span>
+            </div>
+        </div>
+    `;
+}
+
+/**
+ * View all the users of the platform
+ */
+function navigateToUsersList() {
+    const mainWindow = document.getElementById('mainWindow');
+
+    mainWindow.innerHTML = `
+    <!-- All Users Section -->
+    <section id="all-users" class="dashboard-section">
+        <div class="section-header purchase-history-section">
+            <div>
+                <h3>All Users</h3>
+                <p>View all registered users on the platform</p>
+            </div>
+            <button type="button" class="btn btn-back" id="backBtn">&lAarr; Back to Dashboard</button>
+        </div>
+        <div class="users-list" id="allUsersList">
+            <!-- All users will be populated by JavaScript -->
+            <div class="loading-message">Loading users...</div>
+        </div>
+    </section>
+    `;
+
+    // Add to browser history
+    window.history.pushState({ view: 'users' }, '', '#users');
+
+    // Setup back button event listener
+    const backBtn = document.getElementById('backBtn');
+    if (backBtn) {
+        backBtn.addEventListener('click', navigateBack);
+    }
+
+    loadAllUsers();
+}
+
+/**
+ * Load all users from purchases data
+ */
+async function loadAllUsers() {
+    try {
+        const response = await authenticatedFetch('http://localhost:8080/api/admin/purchases');
+
+        if (response && response.ok) {
+            const purchases = await response.json();
+            console.log("Purchases data for users:", purchases);
+            
+            // Extract unique users from purchases
+            const usersMap = new Map();
+            purchases.forEach(purchase => {
+                if (purchase.user && purchase.user.id) {
+                    // Use user ID as key to ensure uniqueness
+                    if (!usersMap.has(purchase.user.id)) {
+                        usersMap.set(purchase.user.id, {
+                            id: purchase.user.id,
+                            fullName: purchase.user.fullName,
+                            email: purchase.user.email
+                        });
+                    }
+                }
+            });
+
+            console.log("Users Map:", usersMap);    // Debug log
+            // Convert map to array
+            const users = Array.from(usersMap.values());
+            console.log("Unique users:", users);    // Debug log
+            displayAllUsers(users);
+        } else {
+            console.error('Failed to load users data');
+            const usersList = document.getElementById('allUsersList');
+            usersList.innerHTML = `
+                <div class="content-placeholder">
+                    <div class="placeholder-text">Failed to load users. Please try again.</div>
+                </div>
+            `;
+        }
+    } catch (error) {
+        console.error('Error loading users:', error);
+        const usersList = document.getElementById('allUsersList');
+        usersList.innerHTML = `
+            <div class="content-placeholder">
+                <div class="placeholder-text">Error loading users. Please try again.</div>
+            </div>
+        `;
+    }
+}
+
+/**
+ * Display all users in a table
+ * @param {Array} users - Array of user objects
+ */
+function displayAllUsers(users) {
+    const usersList = document.getElementById('allUsersList');
+
+    if (users.length === 0) {
+        usersList.innerHTML = `
+            <div class="content-placeholder">
+                <div class="placeholder-text">No users found.</div>
+                <p>No users have made purchases yet.</p>
+            </div>
+        `;
+        return;
+    }
+
+    usersList.innerHTML = `
+        <div class="purchases-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>User ID</th>
+                        <th>Full Name</th>
+                        <th>Email</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${users.map(user => `
+                        <tr>
+                            <td>#${user.id || 'N/A'}</td>
+                            <td>${escapeHtml(user.fullName || 'N/A')}</td>
+                            <td>${escapeHtml(user.email || 'N/A')}</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        </div>
+    `;
+}
+
+/**
+ * Navigate to view purchases across all users
+ */
+function navigateToPurchasesList() {
+    const mainWindow = document.getElementById('mainWindow');
+
+    mainWindow.innerHTML = `
+    <!-- All Purchases Section -->
+    <section id="all-purchases" class="dashboard-section">
+        <div class="section-header purchase-history-section">
+            <div>
+                <h3>All Purchases</h3>
+                <p>View all purchases across the platform</p>
+            </div>
+            <button type="button" class="btn btn-back" id="backBtn">&lAarr; Back to Dashboard</button>
+        </div>
+        <div class="purchases-list" id="allPurchasesList">
+            <!-- All purchases will be populated by JavaScript -->
+            <div class="loading-message">Loading purchases...</div>
+        </div>
+    </section>
+    `;
+
+    // Add to browser history
+    window.history.pushState({ view: 'all-purchases' }, '', '#all-purchases');
+
+    // Setup back button event listener
+    const backBtn = document.getElementById('backBtn');
+    if (backBtn) {
+        backBtn.addEventListener('click', navigateBack);
+    }
+
+    loadAllPurchases();
+}
+
+/**
+ * Load all purchases across the platform
+ */
+async function loadAllPurchases() {
+    try {
+        const response = await authenticatedFetch('http://localhost:8080/api/admin/purchases');
+
+        if (response && response.ok) {
+            const purchases = await response.json();
+            console.log("All purchases:", purchases);
+            displayAllPurchases(purchases);
+        } else {
+            console.error('Failed to load all purchases');
+            const purchasesList = document.getElementById('allPurchasesList');
+            purchasesList.innerHTML = `
+                <div class="content-placeholder">
+                    <div class="placeholder-text">Failed to load purchases. Please try again.</div>
+                </div>
+            `;
+        }
+    } catch (error) {
+        console.error('Error loading all purchases:', error);
+        const purchasesList = document.getElementById('allPurchasesList');
+        purchasesList.innerHTML = `
+            <div class="content-placeholder">
+                <div class="placeholder-text">Error loading purchases. Please try again.</div>
+            </div>
+        `;
+    }
+}
+
+/**
+ * Display all purchases in a table
+ * @param {Array} purchases - Array of purchase objects
+ */
+function displayAllPurchases(purchases) {
+    const purchasesList = document.getElementById('allPurchasesList');
+
+    if (purchases.length === 0) {
+        purchasesList.innerHTML = `
+            <div class="content-placeholder">
+                <div class="placeholder-text">No purchases found.</div>
+                <p>No users have made any purchases yet.</p>
+            </div>
+        `;
+        return;
+    }
+
+    purchasesList.innerHTML = `
+        <div class="purchases-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Purchase ID</th>
+                        <th>User Name</th>
+                        <th>Email</th>
+                        <th>Material Title</th>
+                        <th>Price (Rs.)</th>
+                        <th>Purchase Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${purchases.map(purchase => `
+                        <tr>
+                            <td>#${purchase.id || 'N/A'}</td>
+                            <td>${escapeHtml(purchase.user.fullName || 'N/A')}</td>
+                            <td>${escapeHtml(purchase.user.email || 'N/A')}</td>
+                            <td>${escapeHtml(purchase.material.title || 'N/A')}</td>
+                            <td>${purchase.purchasePrice ? purchase.purchasePrice.toFixed(2) : '0.00'}</td>
+                            <td>${new Date(purchase.purchaseDate).toLocaleDateString()} ${new Date(purchase.purchaseDate).toLocaleTimeString()}</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        </div>
+    `;
+}
+
+/**
+ * Render the main dashboard content when navigating back
+ */
+function renderMainDashboard() {
+    const mainWindow = document.getElementById('mainWindow');
+
+    mainWindow.innerHTML = `
+            <!-- Profile section will be loaded here by JavaScript -->
+            <!-- Users section will be loaded here by JavaScript -->
+            <!-- Purchase history section will be loaded here by JavaScript -->
+
+            <!-- Dashboard Header -->
+            <div class="dashboard-header">
+                <div class="dashboard-actions">
+                    <div class="search-box">
+                        <input type="text" id="search-bar" placeholder="Search materials..." class="search-input">
+                        <button type="button" class="btn btn-clear-search" id="clearSearchBtn">&Cross;</button>
+                        <button class="search-btn" id="searchMaterialsBtn">Search</button>
+                    </div>
+                    <button type="button" class="btn btn-add-material" id="addMaterialBtn">Add Material</button>
+                </div>
+            </div>
+
+            <!-- Materials Section -->
+            <div class="materials-section">
+                <!-- Materials List Container -->
+                <div class="materials-container" id="materialsContainer">
+                    <div class="loading-message" id="loadingMessage">Loading materials...</div>
+                    <div class="error-message hidden" id="errorMessage">Failed to load materials. Please try again.</div>
+
+                    <!-- Materials List -->
+                    <div class="materials-list hidden" id="materialsList">
+                        <!-- Materials will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+    `;
+
+    // Re-initialize after rendering
+    // First set up event listeners
+    setupAdminEventListeners();
+    initializeAddMaterialModal();
+    // Then load materials
+    loadMaterials();
+}
+
+/**
+ * Navigate back to main dashboard
+ */
+
+function navigateBack() {
+    // Go back in browser history
+    window.history.back();
+}
+
+/**
+ * Handle browser back/forward buttons
+ */
+window.addEventListener('popstate', function (event) {
+    /* if (event.state && event.state.view === 'profile') {
+        navigateToProfileView();
+    } else if (event.state && event.state.view === 'all-purchases') {
+        navigateToPurchasesList();
+    } else if (event.state && event.state.view === 'users') {
+        navigateToUsersList();
+    } else {
+        // No state or unknown state, render main dashboard
+        renderMainDashboard();
+    } */
+    
+    renderMainDashboard();
+});

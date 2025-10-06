@@ -261,9 +261,21 @@ async function loadPurchaseHistory() {
             displayPurchaseHistory(purchases);
         } else {
             console.error('Failed to load purchase history');
+            const historyContainer = document.getElementById('purchaseHistory');
+            historyContainer.innerHTML = `
+                <div class="content-placeholder">
+                    <div class="placeholder-text">Error loading purchase history. Please try again.</div>
+                </div>
+            `;
         }
     } catch (error) {
         console.error('Error loading purchase history:', error);
+        const historyContainer = document.getElementById('purchaseHistory');
+        historyContainer.innerHTML = `
+            <div class="content-placeholder">
+                <div class="placeholder-text">Error loading purchase history. Please try again.</div>
+            </div>
+        `;
     }
 }
 
@@ -357,7 +369,7 @@ function displayUserProfile(profileData) {
             </div>
             <div class="profile-field">
                 <label><strong>Role:</strong></label>
-                <span>${profileData.role === 'ROLE_USER' ? 'User' : profileData.role}</span>
+                <span>${profileData.role === 'ROLE_USER' ? 'User' : 'Admin'}</span>
             </div>
         </div>
     `;

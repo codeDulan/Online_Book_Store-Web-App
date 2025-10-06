@@ -465,67 +465,6 @@
     border-bottom: none;
 }
 
-/* Status badges */
-.status-success {
-    background-color: var(--success);
-    color: var(--white);
-    padding: var(--spacing-xs) var(--spacing-sm);
-    border-radius: var(--radius-sm);
-    font-size: var(--font-size-small);
-    font-weight: var(--font-weight-medium);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.status-pending {
-    background-color: var(--accent);
-    color: var(--white);
-    padding: var(--spacing-xs) var(--spacing-sm);
-    border-radius: var(--radius-sm);
-    font-size: var(--font-size-small);
-    font-weight: var(--font-weight-medium);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.status-failed {
-    background-color: var(--error);
-    color: var(--white);
-    padding: var(--spacing-xs) var(--spacing-sm);
-    border-radius: var(--radius-sm);
-    font-size: var(--font-size-small);
-    font-weight: var(--font-weight-medium);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-/* Responsive table */
-@media (max-width: 768px) {
-    .purchases-table {
-        font-size: var(--font-size-small);
-    }
-    
-    .purchases-table th,
-    .purchases-table td {
-        padding: var(--spacing-sm);
-    }
-    
-    .purchases-table th {
-        font-size: var(--font-size-small);
-    }
-}
-
-@media (max-width: 600px) {
-    .purchases-table {
-        display: block;
-        overflow-x: auto;
-        white-space: nowrap;
-    }
-    
-    .purchases-table table {
-        min-width: 600px;
-    }
-}
 
 /**
  * Profile Settings Section
@@ -706,5 +645,33 @@
     .material-actions {
         justify-content: center;
         margin-top: var(--spacing-sm);
+    }
+}
+
+/* Responsive table */
+@media (max-width: 768px) {
+    .purchases-table {
+        font-size: var(--font-size-small);
+    }
+
+    .purchases-table th,
+    .purchases-table td {
+        padding: var(--spacing-sm);
+    }
+
+    .purchases-table th {
+        font-size: var(--font-size-small);
+    }
+}
+
+@media (max-width: 600px) {
+    .purchases-table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+    .purchases-table table {
+        min-width: 600px;
     }
 }
