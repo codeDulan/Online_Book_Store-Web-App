@@ -261,9 +261,21 @@ async function loadPurchaseHistory() {
             displayPurchaseHistory(purchases);
         } else {
             console.error('Failed to load purchase history');
+            const historyContainer = document.getElementById('purchaseHistory');
+            historyContainer.innerHTML = `
+                <div class="content-placeholder">
+                    <div class="placeholder-text">Error loading purchase history. Please try again.</div>
+                </div>
+            `;
         }
     } catch (error) {
         console.error('Error loading purchase history:', error);
+        const historyContainer = document.getElementById('purchaseHistory');
+        historyContainer.innerHTML = `
+            <div class="content-placeholder">
+                <div class="placeholder-text">Error loading purchase history. Please try again.</div>
+            </div>
+        `;
     }
 }
 

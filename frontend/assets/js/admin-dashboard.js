@@ -1349,6 +1349,119 @@ function displayUserProfile(profileData) {
     `;
 }
 
+/**
+ * Navigate to view purchases across all users
+ */
+function navigateToPurchasesList() {
+    const mainWindow = document.getElementById('mainWindow');
+
+    mainWindow.innerHTML = `
+    <!-- All Purchases Section -->
+    <section id="all-purchases" class="dashboard-section">
+        <div class="section-header purchase-history-section">
+            <div>
+                <h3>All Purchases</h3>
+                <p>View all purchases across the platform</p>
+            </div>
+            <button type="button" class="btn btn-back" id="backBtn">&lAarr; Back to Dashboard</button>
+        </div>
+        <div class="purchases-list" id="allPurchasesList">
+            <!-- All purchases will be populated by JavaScript -->
+            <div class="loading-message">Loading purchases...</div>
+        </div>
+    </section>
+    `;
+
+    // Add to browser history
+    window.history.pushState({ view: 'all-purchases' }, '', '#all-purchases');
+
+    // Setup back button event listener
+    const backBtn = document.getElementById('backBtn');
+    if (backBtn) {
+        backBtn.addEventListener('click', navigateBack);
+    }
+
+    loadAllPurchases();
+}
+
+/**
+ * Load all purchases across the platform
+ */
+async function loadAllPurchases() {
+    try {
+        const response = await authenticatedFetch('http://localhost:8080/api/admin/purchases');
+
+        if (response && response.ok) {
+            const purchases = await response.json();
+            console.log("All purchases:", purchases);
+            displayAllPurchases(purchases);
+        } else {
+            console.error('Failed to load all purchases');
+            const purchasesList = document.getElementById('allPurchasesList');
+            purchasesList.innerHTML = `
+                <div class="content-placeholder">
+                    <div class="placeholder-text">Failed to load purchases. Please try again.</div>
+                </div>
+            `;
+        }
+    } catch (error) {
+        console.error('Error loading all purchases:', error);
+        const purchasesList = document.getElementById('allPurchasesList');
+        purchasesList.innerHTML = `
+            <div class="content-placeholder">
+                <div class="placeholder-text">Error loading purchases. Please try again.</div>
+            </div>
+        `;
+    }
+}
+
+/**
+ * Display all purchases in a table
+ * @param {Array} purchases - Array of purchase objects
+ */
+function displayAllPurchases(purchases) {
+    const purchasesList = document.getElementById('allPurchasesList');
+
+    if (purchases.length === 0) {
+        purchasesList.innerHTML = `
+            <div class="content-placeholder">
+                <div class="placeholder-text">No purchases found.</div>
+                <p>No users have made any purchases yet.</p>
+            </div>
+        `;
+        return;
+    }
+
+    purchasesList.innerHTML = `
+        <div class="purchases-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Purchase ID</th>
+                        <th>User Name</th>
+                        <th>Email</th>
+                        <th>Material Title</th>
+                        <th>Price (Rs.)</th>
+                        <th>Purchase Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${purchases.map(purchase => `
+                        <tr>
+                            <td>#${purchase.id || 'N/A'}</td>
+                            <td>${escapeHtml(purchase.user.fullName || 'N/A')}</td>
+                            <td>${escapeHtml(purchase.user.email || 'N/A')}</td>
+                            <td>${escapeHtml(purchase.material.title || 'N/A')}</td>
+                            <td>${purchase.purchasePrice ? purchase.purchasePrice.toFixed(2) : '0.00'}</td>
+                            <td>${new Date(purchase.purchaseDate).toLocaleDateString()} ${new Date(purchase.purchaseDate).toLocaleTimeString()}</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        </div>
+    `;
+}
+
 function renderMainDashboard() {
     const mainWindow = document.getElementById('mainWindow');
 
@@ -1405,15 +1518,16 @@ function navigateBack() {
  * Handle browser back/forward buttons
  */
 window.addEventListener('popstate', function (event) {
-    // if (event.state && event.state.view === 'profile') {
-    //     navigateToProfileView();
-    // } else if (event.state && event.state.view === 'purchase-history') {
-    //     navigateToPurchaseHistory();
-    // } else if (event.state && event.state.view === 'users') {
-    //     navigateToUsersList();
-    // } else {
-    //     // No state or unknown state, render main dashboard
-    //     renderMainDashboard();
-    // }
+    /* if (event.state && event.state.view === 'profile') {
+        navigateToProfileView();
+    } else if (event.state && event.state.view === 'all-purchases') {
+        navigateToPurchasesList();
+    } else if (event.state && event.state.view === 'users') {
+        navigateToUsersList();
+    } else {
+        // No state or unknown state, render main dashboard
+        renderMainDashboard();
+    } */
+    
     renderMainDashboard();
 });
