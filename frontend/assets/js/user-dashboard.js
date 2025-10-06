@@ -20,8 +20,8 @@ function initializeUserDashboard() {
     initializeUserMenu();    
     loadUserLibrary();
     loadBrowseMaterials();
-    loadUserProfile();
     populateSelectOptions();
+    // loadUserProfile();
     // loadPurchaseHistory();
 
     console.log('User dashboard initialized');
@@ -310,10 +310,6 @@ function displayUserProfile(profileData) {
                 <span>${profileData.role === 'ROLE_USER' ? 'User' : profileData.role}</span>
             </div>
         </div>
-        <div class="profile-actions">
-            <button class="btn btn-primary" onclick="editProfile()">Edit Profile</button>
-            <button class="btn btn-outline" onclick="changePassword()">Change Password</button>
-        </div>
     `;
 }
 
@@ -357,6 +353,8 @@ function initializeUserMenu() {
 function setupUserMenuEvents() {
     const menuBtn = document.getElementById('userMenuBtn');
     const dropdown = document.getElementById('userDropdown');
+    const profileLink = document.getElementById('userProfileLink');
+    const purchasesLink = document.getElementById('userPurchasesLink');
     const logoutLink = document.getElementById('userLogoutLink');
 
     if (menuBtn && dropdown) {
@@ -370,7 +368,24 @@ function setupUserMenuEvents() {
             dropdown.classList.remove('show');
         });
     }
+    
+    // Profile View
+    if (profileLink) {
+        profileLink.addEventListener('click', function (e) {
+            e.preventDefault();
+            navigateToProfileView();
+        });
+    }
 
+    // Purchases View
+    if (purchasesLink) {
+        purchasesLink.addEventListener('click', function (e) {
+            e.preventDefault();
+            navigateToPurchaseHistory();
+        });
+    }
+
+    // Logout
     if (logoutLink) {
         logoutLink.addEventListener('click', function (e) {
             e.preventDefault();
@@ -713,6 +728,50 @@ async function authenticatedFetch(url, options = {}) {
     return response;
 }
 
+
+
+/**
+ * Navigate to profile details view
+ */
+
+function navigateToProfileView() {
+    const mainWindow = document.getElementById('mainWindow');
+
+    mainWindow.innerHTML = `
+    <!-- Profile Section -->
+    <section id="profile" class="dashboard-section">
+        <div class="section-header profile-header-section">
+            <div>
+                <h3>Profile Settings</h3>
+                <p>Manage your account information</p>
+            </div>
+            <button type="button" class="btn btn-back" id="backBtn">&lAarr; Back to Dashboard</button>
+        </div>
+
+        <div class="profile-content">
+            <div class="profile-info" id="profileInfo">
+                <!-- Profile information will be populated by JavaScript -->
+                <div class="content-placeholder">
+                    <div class="placeholder-text" id="empty-profile-info">No Profile Information Available.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    `;
+
+    // Add to browser history
+    window.history.pushState({ view: 'profile' }, '', '#profile');
+
+    // Setup back button event listener
+    const backBtn = document.getElementById('backBtn');
+    if (backBtn) {
+        backBtn.addEventListener('click', navigateBack);
+    }
+
+    loadUserProfile();
+}
+
 /**
  * Navigate to purchase history
  */
@@ -721,13 +780,14 @@ function navigateToPurchaseHistory() {
     const mainWindow = document.getElementById('mainWindow');
 
     mainWindow.innerHTML = `
+    <!-- Purchase History Section -->
     <section id="purchases" class="dashboard-section">
         <div class="section-header purchase-history-section">
             <div>
                 <h3>Purchase History</h3>
                 <p>View your past purchases history</p>
             </div>
-            <button type="button" class="btn btn-back" id="backBtn">&lAarr; Back</button>
+            <button type="button" class="btn btn-back" id="backBtn">&lAarr; Back to Dashboard</button>
         </div>
         <div class="purchases-list" id="purchaseHistory">
             <!-- Purchase history will be populated by JavaScript -->
@@ -754,6 +814,9 @@ function renderMainDashboard() {
     const mainWindow = document.getElementById('mainWindow');
 
     mainWindow.innerHTML = `
+            <!-- Profile section will be loaded here by JavaScript -->
+            <!-- Purchase history section will be loaded here by JavaScript -->
+
             <!-- My Library Section -->
             <section id="library" class="dashboard-section">
                 <div class="section-header library-section">
@@ -804,25 +867,6 @@ function renderMainDashboard() {
 
                 <div class="materials-grid" id="browseMaterials">
                     <!-- Available materials will be populated by JavaScript -->
-                </div>
-            </section>
-
-
-            <!-- Profile Section -->
-            <section id="profile" class="dashboard-section">
-                <div class="section-header">
-                    <h3>Profile Settings</h3>
-                    <p>Manage your account information</p>
-                </div>
-
-                <div class="profile-content">
-                    <div class="profile-info" id="profileInfo">
-                        <!-- Profile information will be populated by JavaScript -->
-                        <div class="content-placeholder">
-                            <div class="placeholder-text" id="empty-profile-info">No Profile Information Available.
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </section>
     `;

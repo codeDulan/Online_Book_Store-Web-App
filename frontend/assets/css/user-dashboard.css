@@ -131,12 +131,6 @@
     align-items: center;
 }
 
-.purchase-history-section {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
 .btn-viewAll:hover, .btn-back:hover {
     background-color: var(--accent);
     color: var(--white);
@@ -358,6 +352,12 @@
 /**
  * Purchase History Section
  */
+ .purchase-history-section {
+     display: flex;
+     justify-content: space-between;
+     align-items: center;
+ }
+
 .purchases-table {
     width: 100%;
     overflow-x: auto;
@@ -472,6 +472,12 @@
 /**
  * Profile Settings Section
  */
+.profile-header-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
 .profile-content {
     background-color: var(--white);
     border-radius: var(--radius-sm);
@@ -508,25 +514,12 @@
     font-weight: var(--font-weight-medium);
 }
 
-.profile-actions {
-    display: flex;
-    gap: var(--spacing-md);
-    padding-top: var(--spacing-md);
-    border-top: 1px solid var(--border);
-}
-
-.profile-actions .btn {
-    flex: 1;
-    text-align: center;
-}
-
-
 /**
  * Dashboard Footer
  */
 .footer-content {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
     flex-wrap: wrap;
     gap: var(--spacing-md);
