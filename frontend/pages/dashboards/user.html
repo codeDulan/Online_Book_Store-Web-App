@@ -104,8 +104,37 @@
         </div>
     </footer>
 
+    <!-- Payment Modal -->
+    <div id="paymentModal" class="modal" style="display: none;">
+        <div class="modal-content payment-modal">
+            <div class="modal-header">
+                <h2>Complete Your Purchase</h2>
+                <span class="close" id="closePaymentModal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="paymentInfo" class="payment-info">
+                    <h3 id="materialTitle">Material Title</h3>
+                    <p id="materialPrice" class="price">$0.00</p>
+                </div>
+                <div id="paymentElement" class="payment-element">
+                    <!-- Stripe Elements will create form elements here -->
+                </div>
+                <div id="paymentMessages" class="payment-messages" role="alert"></div>
+            </div>
+            <div class="modal-footer">
+                <button id="cancelPayment" class="btn btn-secondary">Cancel</button>
+                <button id="submitPayment" class="btn btn-primary">
+                    <span id="buttonText">Pay Now</span>
+                    <div id="spinner" class="spinner" style="display: none;"></div>
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Scripts -->
+    <script src="https://js.stripe.com/v3/"></script>
     <script src="../../assets/js/auth.js"></script>
+    <script src="../../assets/js/main.js"></script>
     <script src="../../assets/js/user-dashboard.js"></script>
 </body>
 

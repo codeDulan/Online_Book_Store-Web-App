@@ -203,7 +203,7 @@ function displayBrowseMaterials(materials) {
             </div>
             <div class="material-actions">${material.purchased ?
                 `<button class="btn btn-download" onclick="downloadMaterial(${material.id})">Download</button>` :
-                `<button class="btn btn-primary btn-purchase" onclick="purchaseMaterial(${material.id})">Purchase</button>`}
+                `<button class="btn btn-primary btn-purchase" onclick="purchaseMaterial(${material.id})">Buy Now</button>`}
             </div>
         </div>
     `;
@@ -543,32 +543,307 @@ async function handleUserLogout() {
 /**
  * Action functions
  */
-async function purchaseMaterial(materialId) {
-    if (!confirm('Are you sure you want to purchase this material?')) {
-        return;
-    }
+let stripe = null;
+let elements = null;
+let currentMaterial = null;
 
+// Initialize Stripe when the page loads
+async function initializeStripe() {
     try {
-        const response = await authenticatedFetch(`http://localhost:8080/api/materials/${materialId}/purchase`, {
-            method: 'POST'
-        });
-
-        if (response && response.ok) {
-            alert('Material purchased successfully!');
-            // Reload current section to update UI
-            loadUserLibrary();
-            loadBrowseMaterials();
-            // loadPurchaseHistory();
-        } else {
-            const errorData = await response.json();
-            console.log("Purchase error data:", errorData); // Debug log
-            alert(`Purchase failed: ${errorData.message || 'Unknown error'}`);
-        }
+        const config = await getStripeConfig();
+        stripe = Stripe(config.publishableKey);
     } catch (error) {
-        console.error('Error purchasing material:', error);
-        alert('Error purchasing material. Please try again.');
+        console.error('Failed to initialize Stripe:', error);
     }
 }
+
+async function purchaseMaterial(materialId) {
+    console.log('Purchase material called with ID:', materialId);
+    
+    try {
+        // Get material details first
+        console.log('Fetching material details...');
+        const materialsResponse = await authenticatedFetch(`http://localhost:8080/api/user/materials`);
+        if (!materialsResponse || !materialsResponse.ok) {
+            throw new Error('Failed to load material details');
+        }
+        
+        const materials = await materialsResponse.json();
+        console.log('Materials loaded:', materials);
+        currentMaterial = materials.find(m => m.id === materialId);
+        
+        if (!currentMaterial) {
+            throw new Error('Material not found');
+        }
+
+        console.log('Current material:', currentMaterial);
+
+        // Show payment modal
+        showPaymentModal(currentMaterial);
+        
+        // Create payment intent
+        console.log('Creating payment intent...');
+        const paymentIntentResponse = await createPaymentIntent(materialId);
+        console.log('Payment intent response:', paymentIntentResponse);
+        
+        // Initialize Stripe Elements
+        if (!stripe) {
+            await initializeStripe();
+        }
+        
+        const appearance = {
+            theme: 'stripe',
+            variables: {
+                colorPrimary: '#0ea5e9',
+            }
+        };
+        
+        elements = stripe.elements({
+            clientSecret: paymentIntentResponse.clientSecret,
+            appearance
+        });
+        
+        const paymentElement = elements.create('payment');
+        paymentElement.mount('#paymentElement');
+        
+        // Store payment intent details
+        window.currentPaymentIntent = paymentIntentResponse;
+        
+    } catch (error) {
+        console.error('Error initiating purchase:', error);
+        alert('Error starting purchase process. Please try again.');
+    }
+}
+
+function showPaymentModal(material) {
+    const modal = document.getElementById('paymentModal');
+    const materialTitle = document.getElementById('materialTitle');
+    const materialPrice = document.getElementById('materialPrice');
+    
+    materialTitle.textContent = material.title;
+    materialPrice.textContent = `$${material.price.toFixed(2)}`;
+    
+    modal.style.display = 'flex';
+    
+    // Setup modal event listeners
+    setupPaymentModalListeners();
+}
+
+function hidePaymentModal() {
+    const modal = document.getElementById('paymentModal');
+    modal.style.display = 'none';
+    
+    // Clean up Stripe elements
+    if (elements) {
+        elements.destroy();
+        elements = null;
+    }
+    
+    // Clear payment intent
+    window.currentPaymentIntent = null;
+    currentMaterial = null;
+}
+
+function setupPaymentModalListeners() {
+    const closeBtn = document.getElementById('closePaymentModal');
+    const cancelBtn = document.getElementById('cancelPayment');
+    const submitBtn = document.getElementById('submitPayment');
+    
+    // Remove existing listeners to prevent duplicates
+    closeBtn.replaceWith(closeBtn.cloneNode(true));
+    cancelBtn.replaceWith(cancelBtn.cloneNode(true));
+    submitBtn.replaceWith(submitBtn.cloneNode(true));
+    
+    // Add new listeners
+    document.getElementById('closePaymentModal').addEventListener('click', hidePaymentModal);
+    document.getElementById('cancelPayment').addEventListener('click', hidePaymentModal);
+    document.getElementById('submitPayment').addEventListener('click', handlePaymentSubmit);
+    
+    // Close modal when clicking outside
+    document.getElementById('paymentModal').addEventListener('click', (e) => {
+        if (e.target.id === 'paymentModal') {
+            hidePaymentModal();
+        }
+    });
+}
+
+async function handlePaymentSubmit() {
+    if (!stripe || !elements || !window.currentPaymentIntent) {
+        return;
+    }
+    
+    const submitButton = document.getElementById('submitPayment');
+    const buttonText = document.getElementById('buttonText');
+    const spinner = document.getElementById('spinner');
+    const messagesDiv = document.getElementById('paymentMessages');
+    
+    // Disable submit button and show loading
+    setPaymentLoading(true);
+    
+    try {
+        const { error, paymentIntent } = await stripe.confirmPayment({
+            elements,
+            redirect: 'if_required'
+        });
+        
+        if (error) {
+            showPaymentError(error.message);
+            setPaymentLoading(false);
+        } else if (paymentIntent && paymentIntent.status === 'succeeded') {
+            // Payment succeeded, confirm with backend
+            try {
+                await confirmPayment(paymentIntent.id);
+                
+                // Success!
+                hidePaymentModal();
+                alert('Payment successful! Material purchased.');
+                
+                // Refresh the page to show updated purchase status
+                window.location.reload();
+                
+            } catch (confirmError) {
+                console.error('Error confirming payment:', confirmError);
+                showPaymentError('Payment processed but confirmation failed. Please contact support.');
+            }
+        } else {
+            showPaymentError('Payment was not completed. Please try again.');
+            setPaymentLoading(false);
+        }
+    } catch (error) {
+        console.error('Payment error:', error);
+        showPaymentError('An unexpected error occurred. Please try again.');
+        setPaymentLoading(false);
+    }
+}
+
+function setPaymentLoading(loading) {
+    const submitButton = document.getElementById('submitPayment');
+    const buttonText = document.getElementById('buttonText');
+    const spinner = document.getElementById('spinner');
+    
+    if (loading) {
+        submitButton.disabled = true;
+        buttonText.textContent = 'Processing...';
+        spinner.style.display = 'inline-block';
+    } else {
+        submitButton.disabled = false;
+        buttonText.textContent = 'Pay Now';
+        spinner.style.display = 'none';
+    }
+}
+
+function showPaymentError(message) {
+    const messagesDiv = document.getElementById('paymentMessages');
+    messagesDiv.textContent = message;
+    messagesDiv.classList.add('show');
+    
+    // Hide error after 5 seconds
+    setTimeout(() => {
+        messagesDiv.classList.remove('show');
+    }, 5000);
+}
+
+/**
+ * Stripe Payment Functions (Local copies to ensure availability)
+ */
+
+/**
+ * Get Stripe configuration
+ * @returns {Promise<Object>} - Stripe config with publishable key
+ */
+async function getStripeConfig() {
+    try {
+        const response = await authenticatedFetch('http://localhost:8080/api/payment/config');
+        if (response && response.ok) {
+            return await response.json();
+        }
+        throw new Error('Failed to get payment configuration');
+    } catch (error) {
+        console.error('Error getting Stripe config:', error);
+        throw error;
+    }
+}
+
+/**
+ * Create payment intent for material purchase
+ * @param {number} materialId - ID of the material to purchase
+ * @returns {Promise<Object>} - Payment intent response
+ */
+async function createPaymentIntent(materialId) {
+    try {
+        console.log('Sending payment intent request for material ID:', materialId);
+        const response = await authenticatedFetch('http://localhost:8080/api/payment/create-payment-intent', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ materialId: materialId })
+        });
+        
+        console.log('Payment intent response status:', response.status);
+        console.log('Payment intent response headers:', response.headers);
+        
+        if (response && response.ok) {
+            return await response.json();
+        }
+        
+        // Handle error response - check if response has content
+        let errorMessage = 'Failed to create payment intent';
+        try {
+            const responseText = await response.text();
+            console.log('Error response text:', responseText);
+            
+            if (responseText) {
+                try {
+                    const errorData = JSON.parse(responseText);
+                    errorMessage = errorData.error || errorData.message || errorMessage;
+                } catch (parseError) {
+                    // Response is not JSON, use as plain text
+                    errorMessage = responseText || errorMessage;
+                }
+            }
+        } catch (textError) {
+            console.log('Could not read error response:', textError);
+        }
+        
+        throw new Error(errorMessage);
+    } catch (error) {
+        console.error('Error creating payment intent:', error);
+        throw error;
+    }
+}
+
+/**
+ * Confirm payment completion
+ * @param {string} paymentIntentId - Payment intent ID from Stripe
+ * @returns {Promise<Object>} - Purchase confirmation response
+ */
+async function confirmPayment(paymentIntentId) {
+    try {
+        const response = await authenticatedFetch('http://localhost:8080/api/payment/confirm-payment', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ paymentIntentId: paymentIntentId })
+        });
+        
+        if (response && response.ok) {
+            return await response.json();
+        }
+        
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to confirm payment');
+    } catch (error) {
+        console.error('Error confirming payment:', error);
+        throw error;
+    }
+}
+
+// Initialize Stripe when the page loads
+document.addEventListener('DOMContentLoaded', () => {
+    initializeStripe();
+});
 
 async function downloadMaterial(materialId) {
     try {

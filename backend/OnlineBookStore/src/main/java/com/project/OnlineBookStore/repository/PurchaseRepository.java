@@ -14,4 +14,5 @@ public interface PurchaseRepository extends JpaRepository<Purchase, Long> {
     List<Purchase> findByUserId(Long userId);
     Optional<Purchase> findByUserAndMaterialId(User user, Long materialId);
     boolean existsByUserAndMaterialId(User user, Long materialId);
+    Optional<Purchase> findByStripePaymentIntentId(String stripePaymentIntentId);
 }

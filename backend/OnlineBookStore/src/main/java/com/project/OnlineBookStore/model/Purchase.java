@@ -35,7 +35,14 @@ public class Purchase {
     private LocalDateTime purchaseDate = LocalDateTime.now();
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private PurchaseStatus status = PurchaseStatus.COMPLETED;
+    @Column(nullable = false, length = 20)
+    private PurchaseStatus status = PurchaseStatus.PND;
+
+    // Stripe payment fields
+    @Column(name = "stripe_payment_intent_id")
+    private String stripePaymentIntentId;
+
+    @Column(name = "stripe_client_secret")
+    private String stripeClientSecret;
 
 }

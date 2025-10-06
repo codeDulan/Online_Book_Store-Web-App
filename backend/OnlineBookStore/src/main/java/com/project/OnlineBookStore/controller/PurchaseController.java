@@ -6,7 +6,6 @@ import com.project.OnlineBookStore.service.DTOConversionService;
 import com.project.OnlineBookStore.service.PurchaseService;
 import com.project.OnlineBookStore.util.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -28,19 +27,7 @@ public class PurchaseController {
         this.dtoConversionService = dtoConversionService;
     }
 
-    // Purchase a material
-    @PreAuthorize("hasRole('USER')")
-    @PostMapping("/materials/{materialId}/purchase")
-    public ResponseEntity<PurchaseDTO> purchaseMaterial(@PathVariable Long materialId, HttpServletRequest request) {
-        try {
-            Long userId = extractUserIdFromRequest(request);
-            Purchase purchase = purchaseService.purchaseMaterial(userId, materialId);
-            PurchaseDTO dto = dtoConversionService.convertToPurchaseDTO(purchase);
-            return ResponseEntity.status(HttpStatus.CREATED).body(dto);
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().build();
-        }
-    }
+
 
     // Get user's purchase history
     @PreAuthorize("hasRole('USER')")

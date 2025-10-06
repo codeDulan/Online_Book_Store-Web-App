@@ -19,4 +19,6 @@ public class PurchaseDTO {
     private Double purchasePrice;
     private LocalDateTime purchaseDate;
     private PurchaseStatus status;
+    private String stripePaymentIntentId;
+    private String stripeClientSecret;
 }

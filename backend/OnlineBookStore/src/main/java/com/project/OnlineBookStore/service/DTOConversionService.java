@@ -43,6 +43,8 @@ public class DTOConversionService {
         dto.setPurchasePrice(purchase.getPurchasePrice());
         dto.setPurchaseDate(purchase.getPurchaseDate());
         dto.setStatus(purchase.getStatus());
+        dto.setStripePaymentIntentId(purchase.getStripePaymentIntentId());
+        dto.setStripeClientSecret(purchase.getStripeClientSecret());
         return dto;
     }
 }
