@@ -457,6 +457,12 @@
 }
 
 /**
+ * Users Section
+ * Note: Users list reuses .purchases-table styles defined in Purchases Section
+ */
+
+
+/**
  * Dashboard Footer
  */
 .footer-content {

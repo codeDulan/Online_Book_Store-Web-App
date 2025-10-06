@@ -1350,6 +1350,133 @@ function displayUserProfile(profileData) {
 }
 
 /**
+ * View all the users of the platform
+ */
+function navigateToUsersList() {
+    const mainWindow = document.getElementById('mainWindow');
+
+    mainWindow.innerHTML = `
+    <!-- All Users Section -->
+    <section id="all-users" class="dashboard-section">
+        <div class="section-header purchase-history-section">
+            <div>
+                <h3>All Users</h3>
+                <p>View all registered users on the platform</p>
+            </div>
+            <button type="button" class="btn btn-back" id="backBtn">&lAarr; Back to Dashboard</button>
+        </div>
+        <div class="users-list" id="allUsersList">
+            <!-- All users will be populated by JavaScript -->
+            <div class="loading-message">Loading users...</div>
+        </div>
+    </section>
+    `;
+
+    // Add to browser history
+    window.history.pushState({ view: 'users' }, '', '#users');
+
+    // Setup back button event listener
+    const backBtn = document.getElementById('backBtn');
+    if (backBtn) {
+        backBtn.addEventListener('click', navigateBack);
+    }
+
+    loadAllUsers();
+}
+
+/**
+ * Load all users from purchases data
+ */
+async function loadAllUsers() {
+    try {
+        const response = await authenticatedFetch('http://localhost:8080/api/admin/purchases');
+
+        if (response && response.ok) {
+            const purchases = await response.json();
+            console.log("Purchases data for users:", purchases);
+            
+            // Extract unique users from purchases
+            const usersMap = new Map();
+            purchases.forEach(purchase => {
+                if (purchase.user && purchase.user.id) {
+                    // Use user ID as key to ensure uniqueness
+                    if (!usersMap.has(purchase.user.id)) {
+                        usersMap.set(purchase.user.id, {
+                            id: purchase.user.id,
+                            fullName: purchase.user.fullName,
+                            email: purchase.user.email
+                        });
+                    }
+                }
+            });
+
+            console.log("Users Map:", usersMap);    // Debug log
+            // Convert map to array
+            const users = Array.from(usersMap.values());
+            console.log("Unique users:", users);    // Debug log
+            displayAllUsers(users);
+        } else {
+            console.error('Failed to load users data');
+            const usersList = document.getElementById('allUsersList');
+            usersList.innerHTML = `
+                <div class="content-placeholder">
+                    <div class="placeholder-text">Failed to load users. Please try again.</div>
+                </div>
+            `;
+        }
+    } catch (error) {
+        console.error('Error loading users:', error);
+        const usersList = document.getElementById('allUsersList');
+        usersList.innerHTML = `
+            <div class="content-placeholder">
+                <div class="placeholder-text">Error loading users. Please try again.</div>
+            </div>
+        `;
+    }
+}
+
+/**
+ * Display all users in a table
+ * @param {Array} users - Array of user objects
+ */
+function displayAllUsers(users) {
+    const usersList = document.getElementById('allUsersList');
+
+    if (users.length === 0) {
+        usersList.innerHTML = `
+            <div class="content-placeholder">
+                <div class="placeholder-text">No users found.</div>
+                <p>No users have made purchases yet.</p>
+            </div>
+        `;
+        return;
+    }
+
+    usersList.innerHTML = `
+        <div class="purchases-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>User ID</th>
+                        <th>Full Name</th>
+                        <th>Email</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${users.map(user => `
+                        <tr>
+                            <td>#${user.id || 'N/A'}</td>
+                            <td>${escapeHtml(user.fullName || 'N/A')}</td>
+                            <td>${escapeHtml(user.email || 'N/A')}</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        </div>
+    `;
+}
+
+/**
  * Navigate to view purchases across all users
  */
 function navigateToPurchasesList() {
@@ -1462,6 +1589,9 @@ function displayAllPurchases(purchases) {
     `;
 }
 
+/**
+ * Render the main dashboard content when navigating back
+ */
 function renderMainDashboard() {
     const mainWindow = document.getElementById('mainWindow');
 
