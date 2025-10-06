@@ -6,6 +6,28 @@
 // Global variables
 let currentUser = null;
 
+/**
+ * Faculty to thumbnail mapping
+ */
+
+const FACULTY_THUMBNAILS = {
+    'agriculture': 'foagri.png',
+    'allied health': 'foahs.png',
+    'architecture': 'foarch.png',
+    'arts': 'foa.png',
+    'dental': 'fods.png',
+    'engineering': 'foe.png',
+    'graduate studies': 'fogs.png',
+    'humanities social': 'fohss.png',
+    'information': 'foit.png',
+    'medicine': 'fom.png',
+    'management finance commerce': 'fomfc.png',
+    'science': 'fos.png',
+    'technology': 'fot.png',
+    'veterinary animal': 'fovmas.png',
+    'default': 'default.png'
+};
+
 // Initialize user dashboard
 document.addEventListener('DOMContentLoaded', function () {
     validateUserAccess();
@@ -104,7 +126,6 @@ function displayUserLibrary(purchases) {
         libraryContainer.innerHTML = `
             <div class="materials-placeholder">
                 <div class="placeholder-text" id="empty-user-library">You haven't purchased any materials yet.</div>
-                <button class="btn btn-primary">Browse Materials</button>
             </div>
         `;
         return;
@@ -151,6 +172,32 @@ async function loadBrowseMaterials() {
 }
 
 /**
+ * Get thumbnail image path based on faculty
+ * @param {string} faculty - Faculty name
+ * @returns {string} - Path to thumbnail image
+ */
+function getFacultyThumbnail(faculty) {
+    if (!faculty) {
+        return '/frontend/assets/images/Thumbnails/default.png';
+    }
+
+    // Convert faculty to lowercase for case-insensitive matching
+    const facultyLower = faculty.toLowerCase();
+
+    // Check for keyword matches
+    for (const [keyword, thumbnail] of Object.entries(FACULTY_THUMBNAILS)) {
+        if (keyword === 'default') continue;
+
+        if (facultyLower.includes(keyword)) {
+            return `/frontend/assets/images/Thumbnails/${thumbnail}`;
+        }
+    }
+
+    // Return default if no match found
+    return '/frontend/assets/images/Thumbnails/default.png';
+}
+
+/**
  * Display materials for browsing
  * @param {Array} materials - Array of material objects
  */
@@ -166,11 +213,16 @@ function displayBrowseMaterials(materials) {
         return;
     }
 
-    browseContainer.innerHTML = materials.map(material => `
+    browseContainer.innerHTML = materials.map(material => {
+        const thumbnailPath = getFacultyThumbnail(material.faculty);
+
+        return `
         <div class="material-card">
+            <div class="material-preview">
+                <img src="${thumbnailPath}" alt="${material.faculty || 'Material'} thumbnail" class="material-thumbnail" onerror="this.src='/frontend/assets/images/Thumbnails/default.png'">
+            </div>
             <div class="material-info">
                 <h4>${material.title}</h4>
-                <div class="material-preview">${material.preview || 'No Preview Available'}</div>
                 <p class="material-university">${material.university || 'N/A'}</p>
                 <p class="material-faculty">${material.faculty || 'N/A'}</p>
                 <p class="material-courseModule">${material.courseModule || 'N/A'}</p>
@@ -181,7 +233,8 @@ function displayBrowseMaterials(materials) {
                 `<button class="btn btn-primary btn-purchase" onclick="purchaseMaterial(${material.id})">Purchase</button>`}
             </div>
         </div>
-    `).join('');
+    `;
+    }).join('');
 }
 
 /**
@@ -191,8 +244,7 @@ function displayBrowseError() {
     const browseContainer = document.getElementById('browseMaterials');
     browseContainer.innerHTML = `
         <div class="materials-placeholder">
-            <div class="placeholder-text" id="display-browse-error">Unable to load materials. Please try again later.</div>
-            <button class="btn btn-primary" onclick="loadBrowseMaterials()">Retry</button>
+            <div class="placeholder-text" id="display-browse-error">Unable to load materials.</div>
         </div>
     `;
 }
@@ -228,7 +280,6 @@ function displayPurchaseHistory(purchases) {
             <div class="content-placeholder">
                 <div class="placeholder-text" id="empty-purchase-history">No Purchase History.</div>
                 <p>You haven't made any purchases yet.</p>
-                <button class="btn btn-primary">Start Shopping</button>
             </div>
         `;
         return;
@@ -368,7 +419,7 @@ function setupUserMenuEvents() {
             dropdown.classList.remove('show');
         });
     }
-    
+
     // Profile View
     if (profileLink) {
         profileLink.addEventListener('click', function (e) {
@@ -752,8 +803,7 @@ function navigateToProfileView() {
             <div class="profile-info" id="profileInfo">
                 <!-- Profile information will be populated by JavaScript -->
                 <div class="content-placeholder">
-                    <div class="placeholder-text" id="empty-profile-info">No Profile Information Available.
-                    </div>
+                    <div class="placeholder-text" id="empty-profile-info">No Profile Information Available.</div>
                 </div>
             </div>
         </div>

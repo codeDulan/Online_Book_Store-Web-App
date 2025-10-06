@@ -273,35 +273,68 @@
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(var(--card-width), 1fr));   /* fr - fraction */
     gap: var(--spacing-lg);
+    margin-top: var(--spacing-md);
     justify-items: center;
 }
 
+@media (max-width: 768px) {
+    .materials-grid {
+        grid-template-columns: repeat(auto-fill, minmax(var(--card-width), 1fr));
+        gap: var(--spacing-md);
+    }
+}
+
+@media (max-width: 480px) {
+    .materials-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Material Card Styles */
 .material-card {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
     width: var(--card-width);
     background-color: var(--card-background-color);
     border: var(--card-border);
     border-radius: var(--card-border-radius);
-    box-shadow: var(--card-box-shadow);
     padding: var(--card-padding);
+    transition: all var(--transition-normal);
+}
+
+.material-card:hover {
+    box-shadow: var(--shadow-sm);
+}
+
+/* Material Preview/ Thumbnail */
+.material-preview {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 10rem;  /* 160px */
+    background-color: var(--light-gray);
+    border: 1px solid var(--light-gray);
+    border-radius: var(--radius-sm);
+    margin-bottom: var(--spacing-sm);
+}
+
+.material-thumbnail {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--transition-normal);
+}
+
+/* Material Info */
+.material-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
 }
 
 .material-info * {
-    margin-bottom: 0;
-}
-
-.material-preview {
-    display: grid;
-    place-items: center;
-    width: 100%;
-    height: 10rem;  /* 160px */
-    object-fit: cover;
-    background-color: var(--light-gray);
-    border: 2px solid var(--border);
-    border-radius: var(--radius-sm);
-    margin: var(--spacing-sm) 0 var(--spacing-xs);
+    margin: 0;
 }
 
 .material-university {
@@ -323,8 +356,10 @@
     color: var(--primary);
 }
 
+/* Material Actions */
 .material-actions {
     display: flex;
+    gap: var(--spacing-sm);
     justify-content: space-around;
     margin-top: var(--spacing-xs);
 }
@@ -347,6 +382,21 @@
 .btn-purchase:hover {
     transform: translateY(0);
     box-shadow: none;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .material-preview {
+        height: 120px;
+    }
+   
+    .material-thumbnail {
+        object-fit: contain;
+    }
+
+    .material-info h4 {
+        font-size: var(--font-size-base);
+    }
 }
 
 /**
