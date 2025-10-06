@@ -189,7 +189,23 @@ function setupAdminEventListeners() {
     }
 
     const searchInput = document.getElementById('search-bar');
+    const clearSearchBtn = document.getElementById('clearSearchBtn');
     if (searchInput) {
+        // Show clear button based on input
+        searchInput.addEventListener('input', function () {
+            if (searchInput.value.trim()) {
+                clearSearchBtn.style.visibility = 'visible';
+            }
+        });
+
+        // Clear search input field
+        clearSearchBtn.addEventListener('click', function () {
+            searchInput.value = '';
+            clearSearchBtn.style.visibility = 'hidden';
+            loadMaterials();
+        });
+
+        // Search on Enter key
         searchInput.addEventListener('keypress', function (e) {
             if (e.key === 'Enter') {
                 performSearch();
@@ -260,10 +276,60 @@ async function handleAdminLogout() {
 /** 
  * Perform search action 
  */
-function performSearch() {
-    console.log('Performing search...');
-    alert('💩');
-    // Implement search functionality
+async function performSearch() {
+    const searchInput = document.getElementById('search-bar');
+    const searchTerm = searchInput.value.trim();
+
+    console.log('Performing search for:', searchTerm);
+
+    if (!searchTerm) {
+        // If search is empty, reload all materials
+        loadMaterials();
+        return;
+    }
+
+    try {
+        // Fetch all materials
+        const response = await authenticatedFetch('http://localhost:8080/api/materials');
+
+        if (response && response.ok) {
+            const materials = await response.json();
+
+            // Filter materials based on search term
+            const filteredMaterials = materials.filter(material => {
+                const searchLower = searchTerm.toLowerCase();
+
+                // Search in multiple fields
+                const titleMatch = material.title?.toLowerCase().includes(searchLower);
+                const courseModuleMatch = material.courseModule?.toLowerCase().includes(searchLower);
+                const universityMatch = material.university?.toLowerCase().includes(searchLower);
+                const facultyMatch = material.faculty?.toLowerCase().includes(searchLower);
+
+                // Return true if any field matches
+                return titleMatch || courseModuleMatch || universityMatch || facultyMatch;
+            });
+
+            console.log(`Found ${filteredMaterials.length} materials matching "${searchTerm}"`);
+
+            // Display filtered results
+            displayMaterials(filteredMaterials);
+
+            // Show message if no results found
+            if (filteredMaterials.length === 0) {
+                const materialsList = document.getElementById('materialsList');
+                materialsList.innerHTML = `
+                    <div class="materials-placeholder">
+                        <div class="placeholder-text">No materials found for "${searchTerm}"</div>
+                    </div>
+                `;
+            }
+        } else {
+            console.error('Failed to load materials for search');
+        }
+    } catch (error) {
+        console.error('Error performing search:', error);
+        alert('Error searching materials. Please try again.');
+    }
 }
 
 /**

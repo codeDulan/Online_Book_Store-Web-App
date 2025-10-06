@@ -183,6 +183,14 @@
     color: var(--gray);
 }
 
+.btn-clear-search {
+    background: transparent;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: var(--font-size-xl);
+    color: var(--gray);
+    visibility: hidden;
+}
+
 .search-btn {
     padding: var(--spacing-sm) var(--spacing-md);
     background-color: var(--gray);

@@ -42,9 +42,6 @@ function initializeUserDashboard() {
     initializeUserMenu();    
     loadUserLibrary();
     loadBrowseMaterials();
-    populateSelectOptions();
-    // loadUserProfile();
-    // loadPurchaseHistory();
 
     console.log('User dashboard initialized');
 }
@@ -162,6 +159,7 @@ async function loadBrowseMaterials() {
             console.log("Browse materials:", materials); // Debug log
             // materials.sort((a, b) => b.id - a.id); // Sort materials by ID in descending order
             displayBrowseMaterials(materials);
+            populateSelectOptions();
         } else {
             console.error('Failed to load browse materials');
         }
@@ -171,31 +169,6 @@ async function loadBrowseMaterials() {
     }
 }
 
-/**
- * Get thumbnail image path based on faculty
- * @param {string} faculty - Faculty name
- * @returns {string} - Path to thumbnail image
- */
-function getFacultyThumbnail(faculty) {
-    if (!faculty) {
-        return '/frontend/assets/images/Thumbnails/default.png';
-    }
-
-    // Convert faculty to lowercase for case-insensitive matching
-    const facultyLower = faculty.toLowerCase();
-
-    // Check for keyword matches
-    for (const [keyword, thumbnail] of Object.entries(FACULTY_THUMBNAILS)) {
-        if (keyword === 'default') continue;
-
-        if (facultyLower.includes(keyword)) {
-            return `/frontend/assets/images/Thumbnails/${thumbnail}`;
-        }
-    }
-
-    // Return default if no match found
-    return '/frontend/assets/images/Thumbnails/default.png';
-}
 
 /**
  * Display materials for browsing
@@ -235,6 +208,32 @@ function displayBrowseMaterials(materials) {
         </div>
     `;
     }).join('');
+}
+
+/**
+ * Get thumbnail image path based on faculty
+ * @param {string} faculty - Faculty name
+ * @returns {string} - Path to thumbnail image
+ */
+function getFacultyThumbnail(faculty) {
+    if (!faculty) {
+        return '/frontend/assets/images/Thumbnails/default.png';
+    }
+
+    // Convert faculty to lowercase for case-insensitive matching
+    const facultyLower = faculty.toLowerCase();
+
+    // Check for keyword matches
+    for (const [keyword, thumbnail] of Object.entries(FACULTY_THUMBNAILS)) {
+        if (keyword === 'default') continue;
+
+        if (facultyLower.includes(keyword)) {
+            return `/frontend/assets/images/Thumbnails/${thumbnail}`;
+        }
+    }
+
+    // Return default if no match found
+    return '/frontend/assets/images/Thumbnails/default.png';
 }
 
 /**
@@ -463,7 +462,26 @@ function setupUserEventListeners() {
     }
 
     const searchInput = document.getElementById('search-bar');
-    if (searchInput) {
+    const clearSearchBtn = document.getElementById('clearSearchBtn');
+
+    if (searchInput && clearSearchBtn) {
+        // Show/hide clear button based on input
+        searchInput.addEventListener('input', function () {
+            if (searchInput.value.trim()) {
+                clearSearchBtn.style.visibility = 'visible';
+            } else {
+                clearSearchBtn.style.visibility = 'hidden';
+            }
+        });
+
+        // Clear search input field
+        clearSearchBtn.addEventListener('click', function () {
+            searchInput.value = '';
+            clearSearchBtn.style.visibility = 'hidden';
+            loadBrowseMaterials();
+        });
+
+        // Search on Enter key
         searchInput.addEventListener('keypress', function (e) {
             if (e.key === 'Enter') {
                 performSearch();
@@ -484,6 +502,8 @@ function setupUserEventListeners() {
     if (clearFiltersBtn) {
         clearFiltersBtn.addEventListener('click', clearFilters);
     }
+
+    console.log("Event listeners setup completed");
 }
 
 /**
@@ -538,7 +558,7 @@ async function purchaseMaterial(materialId) {
             // Reload current section to update UI
             loadUserLibrary();
             loadBrowseMaterials();
-            loadPurchaseHistory();
+            // loadPurchaseHistory();
         } else {
             const errorData = await response.json();
             console.log("Purchase error data:", errorData); // Debug log
@@ -574,12 +594,68 @@ async function downloadMaterial(materialId) {
     }
 }
 
-function performSearch() {
-    console.log('Performing search...');
-    alert('💩');
-    // Implement search functionality
+/**
+ * Perform search
+ */
+async function performSearch() {
+    const searchInput = document.getElementById('search-bar');
+    const searchTerm = searchInput.value.trim();
+
+    console.log('Performing search for:', searchTerm);
+
+    if (!searchTerm) {
+        // If search is empty, reload all materials
+        loadBrowseMaterials();
+        return;
+    }
+
+    try {
+        // Fetch all materials
+        const response = await authenticatedFetch('http://localhost:8080/api/user/materials');
+
+        if (response && response.ok) {
+            const materials = await response.json();
+            
+            // Filter materials based on search term
+            const filteredMaterials = materials.filter(material => {
+                const searchLower = searchTerm.toLowerCase();
+                
+                // Search in multiple fields
+                const titleMatch = material.title?.toLowerCase().includes(searchLower);
+                const courseModuleMatch = material.courseModule?.toLowerCase().includes(searchLower);
+                const universityMatch = material.university?.toLowerCase().includes(searchLower);
+                const facultyMatch = material.faculty?.toLowerCase().includes(searchLower);
+                
+                // Return true if any field matches
+                return titleMatch || courseModuleMatch || universityMatch || facultyMatch;
+            });
+
+            console.log(`Found ${filteredMaterials.length} materials matching "${searchTerm}"`);
+            
+            // Display filtered results
+            displayBrowseMaterials(filteredMaterials);
+            
+            // Show message if no results found
+            if (filteredMaterials.length === 0) {
+                const browseContainer = document.getElementById('browseMaterials');
+                browseContainer.innerHTML = `
+                    <div class="materials-placeholder">
+                        <div class="placeholder-text">No materials found for "${searchTerm}"</div>
+                    </div>
+                `;
+            }
+        } else {
+            console.error('Failed to load materials for search');
+        }
+    } catch (error) {
+        console.error('Error performing search:', error);
+        alert('Error searching materials. Please try again.');
+    }
 }
 
+/**
+ * Filter materials
+ */
 async function applyFilters() {
     console.log('Applying filters...');
     const university = document.getElementById('universityFilter').value;
@@ -640,6 +716,9 @@ async function applyFilters() {
 
 function clearFilters() {
     const filters = ['universityFilter', 'facultyFilter', 'purchasedFilter'];
+    const searchInput = document.getElementById('search-bar');
+    const clearSearchBtn = document.getElementById('clearSearchBtn');
+
     filters.forEach(filterId => {
         const filterElement = document.getElementById(filterId);
         if (filterElement) {
@@ -650,16 +729,11 @@ function clearFilters() {
             filterElement.checked = false;
         }
 
-        loadBrowseMaterials();
     });
-}
+    searchInput.value = '';
+    clearSearchBtn.style.visibility = 'hidden';
 
-function editProfile() {
-    alert('Edit profile functionality will be implemented here.');
-}
-
-function changePassword() {
-    alert('Change password functionality will be implemented here.');
+    loadBrowseMaterials();
 }
 
 /**
@@ -893,6 +967,7 @@ function renderMainDashboard() {
                 <div class="browse-controls">
                     <div class="search-box">
                         <input type="text" id="search-bar" placeholder="Search materials..." class="search-input">
+                        <button type="button" class="btn btn-clear-search" id="clearSearchBtn">&Cross;</button>
                         <button class="search-btn" id="searchMaterialsBtn">Search</button>
                     </div>
 
@@ -921,10 +996,15 @@ function renderMainDashboard() {
             </section>
     `;
 
-    // Re-initialize after rendering
-    initializeUserDashboard();
+    // Re-initialize with proper sequencing
+    // First, set up event listeners for static elements
     setupUserEventListeners();
 
+    // Then load data (which is async)
+    loadUserLibrary();
+    loadBrowseMaterials();
+
+    console.log('Main dashboard rendered and initialized');
 }
 
 /**
@@ -943,6 +1023,9 @@ window.addEventListener('popstate', function (event) {
     if (event.state && event.state.view === 'purchase-history') {
         // User went forward to purchase history
         navigateToPurchaseHistory();
+    } if (event.state && event.state.view === 'profile') {
+        // Uesr went forward to profile view
+        navigateToProfileView();
     } else {
         // User went back to main dashboard
         renderMainDashboard();
