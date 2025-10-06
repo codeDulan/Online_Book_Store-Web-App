@@ -735,8 +735,6 @@ async function saveMaterial(materialId) {
 
         // Validate required fields
         for (const key in metadata) {
-            if (!Object.hasOwn(metadata, key)) continue;
-            
             const element = metadata[key];
             if (element === '') {
                 alert("All fields must be filled out.");
@@ -744,8 +742,8 @@ async function saveMaterial(materialId) {
             }
 
             if (key === 'price') {
-                if (metadata[key] < 0) {
-                    alert("Enter a valid amount.")
+                if (metadata[key] <= 0) {
+                    alert("Enter a valid price.")
                     return;
                 }
             }
@@ -1360,8 +1358,8 @@ function navigateToUsersList() {
     <section id="all-users" class="dashboard-section">
         <div class="section-header purchase-history-section">
             <div>
-                <h3>All Users</h3>
-                <p>View all registered users on the platform</p>
+                <h3>Users</h3>
+                <p>Users who have purchased materials</p>
             </div>
             <button type="button" class="btn btn-back" id="backBtn">&lAarr; Back to Dashboard</button>
         </div>
@@ -1446,7 +1444,6 @@ function displayAllUsers(users) {
         usersList.innerHTML = `
             <div class="content-placeholder">
                 <div class="placeholder-text">No users found.</div>
-                <p>No users have made purchases yet.</p>
             </div>
         `;
         return;
@@ -1553,7 +1550,6 @@ function displayAllPurchases(purchases) {
         purchasesList.innerHTML = `
             <div class="content-placeholder">
                 <div class="placeholder-text">No purchases found.</div>
-                <p>No users have made any purchases yet.</p>
             </div>
         `;
         return;
@@ -1641,14 +1637,15 @@ function renderMainDashboard() {
 
 function navigateBack() {
     // Go back in browser history
-    window.history.back();
+    // window.history.back();
+    renderMainDashboard();
 }
 
 /**
  * Handle browser back/forward buttons
  */
 window.addEventListener('popstate', function (event) {
-    /* if (event.state && event.state.view === 'profile') {
+    if (event.state && event.state.view === 'profile') {
         navigateToProfileView();
     } else if (event.state && event.state.view === 'all-purchases') {
         navigateToPurchasesList();
@@ -1657,7 +1654,5 @@ window.addEventListener('popstate', function (event) {
     } else {
         // No state or unknown state, render main dashboard
         renderMainDashboard();
-    } */
-    
-    renderMainDashboard();
+    } 
 });
