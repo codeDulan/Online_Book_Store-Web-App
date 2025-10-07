@@ -1,5 +1,5 @@
 /**
- * Main JavaScript for BookHaven Online Book Store
+ * Main JavaScript for EDURA Educational Materials Platform
  * Handles homepage functionality, navigation, and user session management
  */
 
@@ -27,9 +27,13 @@ const API_ENDPOINTS = {
     MATERIAL_DOWNLOAD: (id) => `${API_BASE_URL}/materials/${id}/download`,
     
     // Purchase endpoints
-    PURCHASE_MATERIAL: (id) => `${API_BASE_URL}/materials/${id}/purchase`,
     CHECK_PURCHASED: (id) => `${API_BASE_URL}/materials/${id}/purchased`,
     USER_PURCHASES: `${API_BASE_URL}/purchases`,
+    
+    // Payment endpoints (Stripe)
+    PAYMENT_CONFIG: `${API_BASE_URL}/payment/config`,
+    CREATE_PAYMENT_INTENT: `${API_BASE_URL}/payment/create-payment-intent`,
+    CONFIRM_PAYMENT: `${API_BASE_URL}/payment/confirm-payment`,
     
     // Admin endpoints
     ADMIN_MATERIALS: `${API_BASE_URL}/admin/materials`,
@@ -60,7 +64,7 @@ function initializeApp() {
     // Initialize book interactions
     initializeBookInteractions();
     
-    console.log('BookHaven application initialized');
+    console.log('EDURA application initialized');
 }
 
 /**
@@ -367,28 +371,7 @@ async function fetchUserMaterials() {
     }
 }
 
-/**
- * Purchase a material (requires authentication)
- * @param {number} materialId - ID of the material to purchase
- * @returns {Promise<Object>} - Purchase response data
- */
-async function purchaseMaterial(materialId) {
-    try {
-        const response = await authenticatedFetch(API_ENDPOINTS.PURCHASE_MATERIAL(materialId), {
-            method: 'POST'
-        });
-        
-        if (response && response.ok) {
-            return await response.json();
-        }
-        
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to purchase material');
-    } catch (error) {
-        console.error('Error purchasing material:', error);
-        throw error;
-    }
-}
+
 
 /**
  * Check if user has purchased a material (requires authentication)
@@ -440,6 +423,81 @@ async function downloadMaterial(materialId) {
         throw new Error('Failed to download material');
     } catch (error) {
         console.error('Error downloading material:', error);
+        throw error;
+    }
+}
+
+/**
+ * Stripe Payment Functions
+ */
+
+/**
+ * Get Stripe configuration
+ * @returns {Promise<Object>} - Stripe config with publishable key
+ */
+async function getStripeConfig() {
+    try {
+        const response = await authenticatedFetch(API_ENDPOINTS.PAYMENT_CONFIG);
+        if (response && response.ok) {
+            return await response.json();
+        }
+        throw new Error('Failed to get payment configuration');
+    } catch (error) {
+        console.error('Error getting Stripe config:', error);
+        throw error;
+    }
+}
+
+/**
+ * Create payment intent for material purchase
+ * @param {number} materialId - ID of the material to purchase
+ * @returns {Promise<Object>} - Payment intent response
+ */
+async function createPaymentIntent(materialId) {
+    try {
+        const response = await authenticatedFetch(API_ENDPOINTS.CREATE_PAYMENT_INTENT, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ materialId: materialId })
+        });
+        
+        if (response && response.ok) {
+            return await response.json();
+        }
+        
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to create payment intent');
+    } catch (error) {
+        console.error('Error creating payment intent:', error);
+        throw error;
+    }
+}
+
+/**
+ * Confirm payment completion
+ * @param {string} paymentIntentId - Payment intent ID from Stripe
+ * @returns {Promise<Object>} - Purchase confirmation response
+ */
+async function confirmPayment(paymentIntentId) {
+    try {
+        const response = await authenticatedFetch(API_ENDPOINTS.CONFIRM_PAYMENT, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ paymentIntentId: paymentIntentId })
+        });
+        
+        if (response && response.ok) {
+            return await response.json();
+        }
+        
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to confirm payment');
+    } catch (error) {
+        console.error('Error confirming payment:', error);
         throw error;
     }
 }
@@ -580,21 +638,7 @@ function handleHeroButtonClick(event) {
 }
 
 /**
- * Handle category card clicks
- * @param {Event} event - Click event
- */
-function handleCategoryClick(event) {
-    const categoryCard = event.currentTarget;
-    const categoryTitle = categoryCard.querySelector('.category-title').textContent;
-    
-    // For Phase 1, just show an alert
-    alert(`${categoryTitle} books coming soon in Phase 3!`);
-    
-    console.log(`Category clicked: ${categoryTitle}`);
-}
-
-/**
- * Handle book action buttons (Add to Cart)
+ * Handle material view buttons
  * @param {Event} event - Click event
  */
 function handleBookAction(event) {
@@ -602,20 +646,19 @@ function handleBookAction(event) {
     
     if (!currentUser) {
         // User not logged in
-        if (confirm('Please login to add books to cart. Go to login page?')) {
+        if (confirm('Please login to access educational materials. Go to login page?')) {
             window.location.href = 'pages/login.html';
         }
         return;
     }
     
-    const bookCard = event.currentTarget.closest('.book-card');
-    const bookTitle = bookCard.querySelector('.book-title').textContent;
-    const bookPrice = bookCard.querySelector('.book-price').textContent;
+    const materialCard = event.currentTarget.closest('.book-card');
+    const materialTitle = materialCard.querySelector('.book-title').textContent;
     
-    // For Phase 1, just show success message
-    showNotification(`"${bookTitle}" added to cart! (${bookPrice})`, 'success');
+    // Redirect to dashboard to view materials
+    showNotification(`Please login to access "${materialTitle}"`, 'info');
     
-    console.log(`Book added to cart: ${bookTitle} - ${bookPrice}`);
+    console.log(`Material requested: ${materialTitle}`);
 }
 
 /**

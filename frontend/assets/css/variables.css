@@ -68,7 +68,7 @@
 
   /* Card Component Attributes */
   --card-width: 14rem;
-  --card-background-color: var(--CatCol);
+  --card-background-color: var(--white);
   --card-border: 1px solid var(--border);
   --card-border-radius: var(--radius-sm);
   --card-box-shadow: var(--shadow-sm);

@@ -53,7 +53,7 @@
 /* Tab Navigation */
 .auth-tabs {
   display: flex;
-  margin-bottom: var(--spacing-xl);
+  margin-bottom: var(--spacing-lg);
   border-bottom: 2px solid var(--border);
 }
 
@@ -99,7 +99,7 @@
 
 .form-header {
   text-align: center;
-  margin-bottom: var(--spacing-xl);
+  margin-bottom: var(--spacing-lg);
 }
 
 .form-header h2 {
@@ -118,7 +118,7 @@
 }
 
 .form-group {
-  margin-bottom: var(--spacing-lg);
+  margin-bottom: var(--spacing-sm);
 }
 
 .form-input {
@@ -207,7 +207,7 @@
   align-items: center;
   justify-content: center;
   gap: var(--spacing-sm);
-  margin-bottom: var(--spacing-md);
+  margin-bottom: var(--spacing-sm);
 }
 
 .auth-btn:disabled {
@@ -247,16 +247,20 @@
 }
 
 .welcome-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   text-align: center;
 }
 
 .welcome-image {
+  background-image: url('/frontend/assets/images/Welcome.jpg');
+  width: 400px;
+  height: 250px;
+  background-size: cover;
+  background-position: center;
+  border-radius: var(--radius-md);
   margin-bottom: var(--spacing-md);
-}
-
-.welcome-img {
-  width: 100%;
-  height: auto;
 }
 
 .welcome-text h3 {

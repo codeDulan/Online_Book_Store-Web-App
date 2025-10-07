@@ -9,7 +9,6 @@
     <!-- Stylesheets -->
     <link rel="stylesheet" href="../../assets/css/variables.css">
     <link rel="stylesheet" href="../../assets/css/base.css">
-    <!-- <link rel="stylesheet" href="../../assets/css/dashboard.css"> -->
     <link rel="stylesheet" href="../../assets/css/user-dashboard.css">
 </head>
 
@@ -33,15 +32,20 @@
             </div>
         </div>
     </header>
+<!-- Main Dashboard Content -->
+<main class="main">
+    <div class="container" id="mainWindow">
+        <!-- Profile section will be loaded here by JavaScript -->
+        <!-- Purchase history section will be loaded here by JavaScript -->
 
-    <!-- Main Dashboard Content -->
-    <main class="main">
-        <div class="container">
-            <!-- My Library Section -->
-            <section id="library" class="dashboard-section">
-                <div class="section-header">
+        <!-- My Library Section -->
+        <section id="library" class="dashboard-section">
+            <div class="section-header library-section">
+                <div>
                     <h3>My Library</h3>
-                    <p>Your purchased materials</p>
+                        <p>Your recently purchased materials</p>
+                    </div>
+                    <button type="button" class="btn btn-viewAll" id="viewAllPurchasesBtn">View All &rAarr;</button>
                 </div>
 
                 <div class="materials-grid" id="userLibrary">
@@ -60,6 +64,7 @@
                 <div class="browse-controls">
                     <div class="search-box">
                         <input type="text" id="search-bar" placeholder="Search materials..." class="search-input">
+                        <button type="button" class="btn btn-clear-search" id="clearSearchBtn">&Cross;</button>
                         <button class="search-btn" id="searchMaterialsBtn">Search</button>
                     </div>
 
@@ -86,36 +91,6 @@
                     <!-- Available materials will be populated by JavaScript -->
                 </div>
             </section>
-
-            <!-- My Purchases Section -->
-            <section id="purchases" class="dashboard-section">
-                <div class="section-header">
-                    <h3>Purchase History</h3>
-                    <p>View your past purchases history</p>
-                </div>
-
-                <div class="purchases-list" id="purchaseHistory">
-                    <!-- Purchase history will be populated by JavaScript -->
-                </div>
-            </section>
-
-            <!-- Profile Section -->
-            <section id="profile" class="dashboard-section">
-                <div class="section-header">
-                    <h3>Profile Settings</h3>
-                    <p>Manage your account information</p>
-                </div>
-
-                <div class="profile-content">
-                    <div class="profile-info" id="profileInfo">
-                        <!-- Profile information will be populated by JavaScript -->
-                        <div class="content-placeholder">
-                            <div class="placeholder-text" id="empty-profile-info">No Profile Information Available.
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
         </div>
     </main>
 
@@ -124,16 +99,39 @@
         <div class="container">
             <div class="footer-content">
                 <p>&copy; 2024 EDURA Online Book Store. All rights reserved.</p>
-                <div class="footer-links">
-                    <a href="#" class="footer-link">Help</a>
-                    <a href="#" class="footer-link">Support</a>
-                    <a href="#" class="footer-link">Terms</a>
-                </div>
             </div>
         </div>
     </footer>
 
+    <!-- Payment Modal -->
+    <div id="paymentModal" class="modal" style="display: none;">
+        <div class="modal-content payment-modal">
+            <div class="modal-header">
+                <h2>Complete Your Purchase</h2>
+                <span class="close" id="closePaymentModal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="paymentInfo" class="payment-info">
+                    <h3 id="materialTitle">Material Title</h3>
+                    <p id="materialPrice" class="price">$0.00</p>
+                </div>
+                <div id="paymentElement" class="payment-element">
+                    <!-- Stripe Elements will create form elements here -->
+                </div>
+                <div id="paymentMessages" class="payment-messages" role="alert"></div>
+            </div>
+            <div class="modal-footer">
+                <button id="cancelPayment" class="btn btn-secondary">Cancel</button>
+                <button id="submitPayment" class="btn btn-primary">
+                    <span id="buttonText">Pay Now</span>
+                    <div id="spinner" class="spinner" style="display: none;"></div>
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Scripts -->
+    <script src="https://js.stripe.com/v3/"></script>
     <script src="../../assets/js/auth.js"></script>
     <script src="../../assets/js/user-dashboard.js"></script>
 </body>
