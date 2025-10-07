@@ -659,8 +659,14 @@ function populateDetailsSection(material, mode) {
         fileInput.addEventListener('change', function () {
             if (this.files.length > 0) {
                 const file = this.files[0];
-                fileUploadSection.classList.add('has-file');
-                fileInfo.innerHTML = `<div class="current-file">Selected: ${file.name}</div>`;
+                if (isPDFFile(file)) {
+                    fileUploadSection.classList.add('has-file');
+                    fileInfo.innerHTML = `<div class="current-file">Selected: ${file.name}</div>`;
+                } else {
+                    alert('Please select a PDF file only. Other file type is not supported.');
+                    fileUploadSection.classList.remove('has-file');
+                    fileInfo.innerHTML = `<div class="current-file">Current: ${file.name || 'No file'}</div>`;
+                }
             } else {
                 fileUploadSection.classList.remove('has-file');
                 fileInfo.innerHTML = `<div class="current-file">Current: ${material.filename || 'No file'}</div>`;
@@ -713,7 +719,12 @@ async function saveMaterial(materialId) {
         // Get file input
         const fileInput = document.getElementById('materialFile');
         if (fileInput && fileInput.files.length > 0) {
-            formData.append('file', fileInput.files[0]);
+            const file = fileInput.files[0];
+            if (!isPDFFile(file)) {
+                alert('Please upload a PDF file only. Selected file type is not supported.');
+                return;
+            }
+            formData.append('file', file);
         }
 
         // Collect material metadata
@@ -1060,7 +1071,12 @@ function initializeFileUpload() {
     fileInput.addEventListener('change', (e) => {
         const file = e.target.files[0];
         if (file) {
-            handleFileSelection(file);
+            if (isPDFFile(file)) {
+                handleFileSelection(file);
+            } else {
+                alert('Please select a PDF file only. Other file types are not supported.');
+                fileInput.value = ''; // Clear the invalid selection
+            }
         }
     });
     
@@ -1085,7 +1101,7 @@ function initializeFileUpload() {
                 fileInput.files = files;
                 handleFileSelection(file);
             } else {
-                alert('Please select a PDF file.');
+                alert('Please select a PDF file only. Other file types are not supported.');
             }
         }
     });
@@ -1161,7 +1177,12 @@ async function submitAddMaterial() {
     formData.append('metadata', JSON.stringify(metadata));
     const fileInput = document.getElementById('amfFile');
     if (fileInput.files.length > 0) {
-        formData.append('file', fileInput.files[0]);
+        const file = fileInput.files[0];
+        if (!isPDFFile(file)) {
+            alert('Please upload a PDF file only. Selected file type is not supported.');
+            return;
+        }
+        formData.append('file', file);
     }
 
     try {
@@ -1647,6 +1668,27 @@ function navigateBack() {
     // Go back in browser history
     // window.history.back();
     renderMainDashboard();
+}
+
+/**
+ * Validate if a file is a PDF
+ * Media types (MIME types)
+ * A media type (formerly known as a Multipurpose Internet Mail Extensions or MIME type) 
+ * indicates the nature and format of a document.
+ * @param {File} file - File object to validate
+ * @returns {boolean} - True if file is PDF, false otherwise
+ */
+function isPDFFile(file) {
+    if (!file) return false;
+    
+    // Check MIME type
+    const validMimeType = file.type === 'application/pdf';
+    
+    // Check file extension
+    const fileName = file.name.toLowerCase();
+    const validExtension = fileName.endsWith('.pdf');
+    
+    return validMimeType && validExtension;
 }
 
 /**

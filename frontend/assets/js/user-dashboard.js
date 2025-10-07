@@ -28,6 +28,7 @@ const FACULTY_THUMBNAILS = {
     'management': 'fomfc.png',
     'science': 'fos.png',
     'technology': 'fot.png',
+    'computing': 'fot.png',
     'default': 'default.png'
 };
 
