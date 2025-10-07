@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Online Book Store - Your Literary Journey Starts Here</title>
+    <title>EDURA - Educational Materials Sharing Platform for Students</title>
 
     <!-- CSS Files -->
     <link rel="stylesheet" href="assets/css/variables.css">
@@ -27,8 +27,8 @@
                 <nav class="nav">
                     <ul class="nav-list">
                         <li class="nav-item"><a href="#home" class="nav-link">Home</a></li>
-                        <li class="nav-item"><a href="#categories" class="nav-link">Categories</a></li>
-                        <li class="nav-item"><a href="#featured" class="nav-link">Featured</a></li>
+                        <li class="nav-item"><a href="#faculties" class="nav-link">Faculties</a></li>
+                        <li class="nav-item"><a href="#materials" class="nav-link">Materials</a></li>
                         <li class="nav-item"><a href="#contact" class="nav-link">Contact</a></li>
                     </ul>
                 </nav>
@@ -48,147 +48,151 @@
             <div class="container">
                 <div class="hero-content">
                     <div class="hero-text">
-                        <h1 class="hero-title">Discover Your Next Great Read</h1>
+                        <h1 class="hero-title">Access Quality Educational Materials</h1>
                         <p class="hero-description">
-                            Welcome to EDURA, your ultimate destination for books.
-                            Explore thousands of titles, from bestsellers to hidden gems,
-                            and embark on your next literary adventure.
+                            Welcome to EDURA, the leading platform for students to discover and access
+                            educational materials. Browse thousands of lecture notes, past papers, study guides,
+                            and course materials shared by students across Sri Lankan universities.
                         </p>
                         <div class="hero-actions">
-                            <a href="#featured" class="btn btn-primary btn-large">Browse Books</a>
-                            <a href="#categories" class="btn btn-outline btn-large">Explore Categories</a>
+                            <a href="#materials" class="btn btn-primary btn-large">Browse Materials</a>
+                            <a href="pages/login.html" class="btn btn-outline btn-large">Get Started</a>
                         </div>
                     </div>
                     <div class="hero-image">
                         <!-- Placeholder for hero image -->
                         <div class="image-placeholder">
-                            <!-- <div class="placeholder-icon"> -->
-                            <img src="assets/images/books.jpg" alt="Books" class="welcome-image">
-                            <!-- </div> -->
+                            <!-- <img src="assets/images/books.jpg" alt="Educational Materials" class="welcome-image"> -->
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Categories Section -->
-        <section id="categories" class="section categories">
+        <!-- Faculties Section -->
+        <section id="faculties" class="section categories">
             <div class="container">
-                <h2 class="section-title">Browse by Categories</h2>
+                <h2 class="section-title">Browse by Faculty</h2>
+                <p class="section-subtitle">Find materials specific to your field of study</p>
                 <div class="categories-grid grid grid-4">
-                    <!-- Fiction Category -->
+                    <!-- Engineering Faculty -->
                     <div class="category-card card">
-                        <div class="category-icon">📚</div>
-                        <h3 class="category-title">Fiction</h3>
-                        <p class="category-description">
-                            Immerse yourself in captivating stories and imaginative worlds.
-                        </p>
-                        <a href="#" class="btn btn-secondary">Explore Fiction</a>
+                        <div class="category-content">
+                            <div class="category-icon">⚙️</div>
+                            <h3 class="category-title">Engineering</h3>
+                            <p class="category-description">
+                                Access lecture notes, lab reports, and course materials for engineering students.
+                            </p>
+                        </div>
+                        <div class="category-action">
+                            <a href="pages/login.html" class="btn btn-primary faculty-btn">View Materials</a>
+                        </div>
+                    </div>
+                    
+                    <!-- Science Faculty -->
+                    <div class="category-card card">
+                        <div class="category-content">
+                            <div class="category-icon">🔬</div>
+                            <h3 class="category-title">Science</h3>
+                            <p class="category-description">
+                                Discover study materials, research papers, and practical guides for science disciplines.
+                            </p>
+                        </div>
+                        <div class="category-action">
+                            <a href="pages/login.html" class="btn btn-primary faculty-btn">View Materials</a>
+                        </div>
                     </div>
 
-                    <!-- Non-Fiction Category -->
+                    <!-- Medicine Faculty -->
                     <div class="category-card card">
-                        <div class="category-icon">📖</div>
-                        <h3 class="category-title">Non-Fiction</h3>
-                        <p class="category-description">
-                            Discover real stories, biographies, and educational content.
-                        </p>
-                        <a href="#" class="btn btn-secondary">Explore Non-Fiction</a>
+                        <div class="category-content">
+                            <div class="category-icon">🏥</div>
+                            <h3 class="category-title">Medicine</h3>
+                            <p class="category-description">
+                                Find medical textbooks, case studies, and clinical practice materials.
+                            </p>
+                        </div>
+                        <div class="category-action">
+                            <a href="pages/login.html" class="btn btn-primary faculty-btn">View Materials</a>
+                        </div>
                     </div>
 
-                    <!-- Science & Technology Category -->
+                    <!-- Arts Faculty -->
                     <div class="category-card card">
-                        <div class="category-icon">🔬</div>
-                        <h3 class="category-title">Science & Tech</h3>
-                        <p class="category-description">
-                            Stay updated with the latest in science and technology. <br>&nbsp;
-                        </p>
-                        <a href="#" class="btn btn-secondary">Explore Science</a>
-                    </div>
-
-                    <!-- Arts & Culture Category -->
-                    <div class="category-card card">
-                        <div class="category-icon">🎨</div>
-                        <h3 class="category-title">Arts & Culture</h3>
-                        <p class="category-description">
-                            Explore creativity, art history, and cultural insights.
-                        </p>
-                        <a href="#" class="btn btn-secondary">Explore Arts</a>
+                        <div class="category-content">
+                            <div class="category-icon">🎨</div>
+                            <h3 class="category-title">Arts & Humanities</h3>
+                            <p class="category-description">
+                                Explore literature, history, languages, and social science materials.
+                            </p>
+                        </div>
+                        <div class="category-action">
+                            <a href="pages/login.html" class="btn btn-primary faculty-btn">View Materials</a>
+                        </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Featured Books Section -->
-        <section id="featured" class="section featured-books">
+        <!-- Featured Materials Section -->
+        <section id="materials" class="section featured-books">
             <div class="container">
-                <h2 class="section-title">Featured Books</h2>
+                <h2 class="section-title">Recently Added Materials</h2>
+                <p class="section-subtitle">Check out the latest educational resources uploaded by students</p>
                 <div class="books-grid grid grid-4">
-                    <!-- Book 1 -->
+                    <!-- Material 1 -->
                     <div class="book-card card">
-                        <div class="book-image">
-                            <!-- Placeholder for book cover -->
-                            <div class="image-placeholder book-cover">
-                                <div class="placeholder-icon">📕</div>
-                                <p>Book Cover</p>
+                        <div class="book-content">
+                            <div class="image-placeholder book-cover" style="background-image: url('/frontend/assets/images/Thumbnails/foe.png');"></div>
+                            <div class="book-info">
+                                <h3 class="book-title">Data Structures & Algorithms</h3>
+                                <p class="book-author">Faculty of Engineering</p>
                             </div>
                         </div>
-                        <div class="book-info">
-                            <h3 class="book-title">The Great Adventure</h3>
-                            <p class="book-author">by John Smith</p>
-                            <p class="book-price">LKR 19.99</p>
-                            <button class="btn btn-primary book-btn">Add to Cart</button>
+                        <div class="book-actions">
+                            <a href="pages/login.html" class="btn btn-primary book-btn">View Material</a>
                         </div>
                     </div>
 
-                    <!-- Book 2 -->
+                    <!-- Material 2 -->
                     <div class="book-card card">
-                        <div class="book-image">
-                            <!-- Placeholder for book cover -->
-                            <div class="image-placeholder book-cover">
-                                <div class="placeholder-icon">📗</div>
-                                <p>Book Cover</p>
+                        <div class="book-content">
+                            <div class="image-placeholder book-cover" style="background-image: url('/frontend/assets/images/Thumbnails/fos.png');"></div>
+                            <div class="book-info">
+                                <h3 class="book-title">Organic Chemistry</h3>
+                                <p class="book-author">Faculty of Science</p>
                             </div>
                         </div>
-                        <div class="book-info">
-                            <h3 class="book-title">Science Explained</h3>
-                            <p class="book-author">by Dr. Jane Doe</p>
-                            <p class="book-price">LKR 24.99</p>
-                            <button class="btn btn-primary book-btn">Add to Cart</button>
+                        <div class="book-actions">
+                            <a href="pages/login.html" class="btn btn-primary book-btn">View Material</a>
                         </div>
                     </div>
 
-                    <!-- Book 3 -->
+                    <!-- Material 3 -->
                     <div class="book-card card">
-                        <div class="book-image">
-                            <!-- Placeholder for book cover -->
-                            <div class="image-placeholder book-cover">
-                                <div class="placeholder-icon">📘</div>
-                                <p>Book Cover</p>
+                        <div class="book-content">
+                            <div class="image-placeholder book-cover" style="background-image: url('/frontend/assets/images/Thumbnails/fom.png');"></div>
+                            <div class="book-info">
+                                <h3 class="book-title">Clinical Medicine Guide</h3>
+                                <p class="book-author">Faculty of Medicine</p>
                             </div>
                         </div>
-                        <div class="book-info">
-                            <h3 class="book-title">Modern Art Guide</h3>
-                            <p class="book-author">by Sarah Wilson</p>
-                            <p class="book-price">LKR 29.99</p>
-                            <button class="btn btn-primary book-btn">Add to Cart</button>
+                        <div class="book-actions">
+                            <a href="pages/login.html" class="btn btn-primary book-btn">View Material</a>
                         </div>
                     </div>
 
-                    <!-- Book 4 -->
+                    <!-- Material 4 -->
                     <div class="book-card card">
-                        <div class="book-image">
-                            <!-- Placeholder for book cover -->
-                            <div class="image-placeholder book-cover">
-                                <div class="placeholder-icon">📙</div>
-                                <p>Book Cover</p>
+                        <div class="book-content">
+                            <div class="image-placeholder book-cover" style="background-image: url('/frontend/assets/images/Thumbnails/foa.png')"></div>
+                            <div class="book-info">
+                                <h3 class="book-title">World History Compendium</h3>
+                                <p class="book-author">Faculty of Arts</p>
                             </div>
                         </div>
-                        <div class="book-info">
-                            <h3 class="book-title">Digital Future</h3>
-                            <p class="book-author">by Tech Innovator</p>
-                            <p class="book-price">LKR 22.99</p>
-                            <button class="btn btn-primary book-btn">Add to Cart</button>
+                        <div class="book-actions">
+                            <a href="pages/login.html" class="btn btn-primary book-btn">View Material</a>
                         </div>
                     </div>
                 </div>
@@ -203,21 +207,25 @@
                     <div class="contact-info">
                         <h3>Get in Touch</h3>
                         <p>
-                            Have questions about our books or need assistance?
-                            We're here to help you find your perfect read.
+                            Have questions about accessing materials or need assistance with your account?
+                            We're here to help you succeed in your studies.
                         </p>
                         <div class="contact-details">
                             <div class="contact-item">
                                 <strong>📧 Email:</strong>
-                                <span>info@edura.com</span>
+                                <span>support@edura.lk</span>
                             </div>
                             <div class="contact-item">
                                 <strong>📞 Phone:</strong>
-                                <span>+94 (11) 123-4567</span>
+                                <span>+94 (11) 234-5678</span>
                             </div>
                             <div class="contact-item">
                                 <strong>📍 Address:</strong>
-                                <span>No 213, Technical Street, Colombo 01</span>
+                                <span>University Road, Colombo 07, Sri Lanka</span>
+                            </div>
+                            <div class="contact-item">
+                                <strong>⏰ Support Hours:</strong>
+                                <span>Mon - Fri: 9:00 AM - 6:00 PM</span>
                             </div>
                         </div>
                     </div>
@@ -225,15 +233,15 @@
                         <form id="contactForm">
                             <div class="form-group">
                                 <label for="name" class="form-label">Name</label>
-                                <input type="text" id="name" name="name" class="form-input" required>
+                                <input type="text" id="name" name="name" class="form-input" placeholder="Your full name" required>
                             </div>
                             <div class="form-group">
                                 <label for="email" class="form-label">Email</label>
-                                <input type="email" id="email" name="email" class="form-input" required>
+                                <input type="email" id="email" name="email" class="form-input" placeholder="Your email address" required>
                             </div>
                             <div class="form-group">
                                 <label for="message" class="form-label">Message</label>
-                                <textarea id="message" name="message" class="form-input" rows="5" required></textarea>
+                                <textarea id="message" name="message" class="form-input" rows="5" placeholder="How can we help you?" required></textarea>
                             </div>
                             <button type="submit" class="btn btn-primary">Send Message</button>
                         </form>
@@ -249,28 +257,37 @@
             <div class="footer-content">
                 <div class="footer-section">
                     <h4>EDURA</h4>
-                    <p>Your trusted partner in discovering great books and expanding your literary horizons.</p>
+                    <p>Empowering students through shared knowledge. Access quality educational materials from universities across Sri Lanka.</p>
                 </div>
                 <div class="footer-section">
                     <h4>Quick Links</h4>
                     <ul class="footer-links">
                         <li><a href="#home">Home</a></li>
-                        <li><a href="#categories">Categories</a></li>
-                        <li><a href="#featured">Featured</a></li>
+                        <li><a href="#faculties">Faculties</a></li>
+                        <li><a href="#materials">Materials</a></li>
                         <li><a href="#contact">Contact</a></li>
                     </ul>
                 </div>
                 <div class="footer-section">
-                    <h4>Follow Us</h4>
+                    <h4>Resources</h4>
+                    <ul class="footer-links">
+                        <li><a href="pages/login.html">Student Login</a></li>
+                        <li><a href="#">FAQs</a></li>
+                        <li><a href="#">Upload Guidelines</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Connect</h4>
                     <div class="social-links">
                         <a href="#" class="social-link">Facebook</a>
                         <a href="#" class="social-link">Twitter</a>
-                        <a href="#" class="social-link">Instagram</a>
+                        <a href="#" class="social-link">LinkedIn</a>
                     </div>
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2025 EDURA. All rights reserved.</p>
+                <p>&copy; 2025 EDURA - Educational Materials Platform. All rights reserved.</p>
             </div>
         </div>
     </footer>

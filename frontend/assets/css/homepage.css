@@ -47,7 +47,10 @@
 /* Hero Section */
 .hero {
   padding: var(--spacing-3xl) 0;
-  background: linear-gradient(135deg, var(--background) 0%, var(--secondary) 100%);
+  background-image: linear-gradient(100deg, var(--background) 30%, transparent 90%), url('/frontend/assets/images/books.jpg');
+  background-image: linear-gradient(110deg, var(--background) 30%, var(--secondary) 100%);
+  background-size: cover;
+  background-position: center;
 }
 
 .hero-content {
@@ -67,7 +70,7 @@
 
 .hero-description {
   font-size: var(--font-size-large);
-  color: var(--gray);
+  color: var(--text);
   margin-bottom: var(--spacing-xl);
   line-height: 1.6;
 }
@@ -77,6 +80,10 @@
   gap: var(--spacing-md);
 }
 
+.btn-primary:hover {
+  transform: none;
+}
+
 .hero-image {
   display: flex;
   justify-content: center;
@@ -84,30 +91,45 @@
 }
 
 .image-placeholder {
+  background-image: url('/frontend/assets/images/books.jpg');
+  background-size: cover;
+  background-position: center;
   width: 400px;
   height: 300px;
-  background-color: var(--light-gray);
-  border: 2px dashed var(--border);
-  border-radius: var(--radius-lg);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  color: var(--gray);
-  text-align: center;
+  border-radius: var(--radius-md);
 }
 
 .welcome-image {
   width: 400px;
   height: 300px;
+  /* object-fit: cover; */
+  border-radius: var(--radius-md);
 }
 
-.placeholder-icon {
-  font-size: 64px;
-  margin-bottom: var(--spacing-md);
+/* Section Titles */
+.section {
+  padding: var(--spacing-2xl) 0 0;
 }
 
-/* Categories Section */
+.section-title {
+  text-align: center;
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--text);
+  margin-bottom: var(--spacing-sm);
+}
+
+.section-subtitle {
+  text-align: center;
+  font-size: var(--font-size-large);
+  color: var(--gray);
+  margin-bottom: var(--spacing-2xl);
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Faculties Section */
 .categories {
   background-color: var(--white);
 }
@@ -121,6 +143,15 @@
   padding: var(--spacing-xl);
   transition: transform var(--transition-normal);
   background-color: var(--CatCol);
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+}
+
+.category-content {
+  flex: 1;
 }
 
 .category-card:hover {
@@ -142,7 +173,11 @@
   margin-bottom: var(--spacing-lg);
 }
 
-/* Featured Books Section */
+.faculty-btn {
+  color: var(--white);
+}
+
+/* Featured Materials Section */
 .featured-books {
   background-color: var(--background);
 }
@@ -152,6 +187,8 @@
 }
 
 .book-card {
+  display: flex;
+  flex-direction: column;
   transition: transform var(--transition-normal);
   overflow: hidden;
   background-color: var(--CatCol);
@@ -161,27 +198,19 @@
   transform: translateY(-5px);
 }
 
-.book-image {
-  margin-bottom: var(--spacing-md);
+.book-content {
+  flex: 1;
+  margin-bottom: var(--spacing-sm);
 }
 
 .book-cover {
   width: 100%;
   height: 200px;
   background-color: var(--light-gray);
-  border: 2px dashed var(--border);
   border-radius: var(--radius-md);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  color: var(--gray);
-  font-size: var(--font-size-small);
-}
-
-.book-cover .placeholder-icon {
-  font-size: 32px;
-  margin-bottom: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+  background-size: cover;
+  background-position: center;
 }
 
 .book-info {
@@ -199,13 +228,6 @@
   color: var(--gray);
   font-size: var(--font-size-small);
   margin-bottom: var(--spacing-sm);
-}
-
-.book-price {
-  font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-bold);
-  color: var(--primary);
-  margin-bottom: var(--spacing-md);
 }
 
 .book-btn {
@@ -256,15 +278,17 @@
 
 /* Footer */
 .home-page-footer {
+  margin-top: var(--spacing-2xl);
   background-color: var(--text);
   color: var(--background);
 }
 
 .footer-content {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   padding-top: var(--spacing-lg);
   gap: var(--spacing-2xl);
+  justify-items: center;
 }
 
 .footer-section h4 {
@@ -297,7 +321,8 @@
 
 .social-links {
   display: flex;
-  gap: var(--spacing-md);
+  flex-direction: column;
+  gap: var(--spacing-sm);
 }
 
 .social-link {

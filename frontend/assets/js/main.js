@@ -1,5 +1,5 @@
 /**
- * Main JavaScript for BookHaven Online Book Store
+ * Main JavaScript for EDURA Educational Materials Platform
  * Handles homepage functionality, navigation, and user session management
  */
 
@@ -64,7 +64,7 @@ function initializeApp() {
     // Initialize book interactions
     initializeBookInteractions();
     
-    console.log('BookHaven application initialized');
+    console.log('EDURA application initialized');
 }
 
 /**
@@ -638,21 +638,7 @@ function handleHeroButtonClick(event) {
 }
 
 /**
- * Handle category card clicks
- * @param {Event} event - Click event
- */
-function handleCategoryClick(event) {
-    const categoryCard = event.currentTarget;
-    const categoryTitle = categoryCard.querySelector('.category-title').textContent;
-    
-    // For Phase 1, just show an alert
-    alert(`${categoryTitle} books coming soon in Phase 3!`);
-    
-    console.log(`Category clicked: ${categoryTitle}`);
-}
-
-/**
- * Handle book action buttons (Add to Cart)
+ * Handle material view buttons
  * @param {Event} event - Click event
  */
 function handleBookAction(event) {
@@ -660,20 +646,19 @@ function handleBookAction(event) {
     
     if (!currentUser) {
         // User not logged in
-        if (confirm('Please login to add books to cart. Go to login page?')) {
+        if (confirm('Please login to access educational materials. Go to login page?')) {
             window.location.href = 'pages/login.html';
         }
         return;
     }
     
-    const bookCard = event.currentTarget.closest('.book-card');
-    const bookTitle = bookCard.querySelector('.book-title').textContent;
-    const bookPrice = bookCard.querySelector('.book-price').textContent;
+    const materialCard = event.currentTarget.closest('.book-card');
+    const materialTitle = materialCard.querySelector('.book-title').textContent;
     
-    // For Phase 1, just show success message
-    showNotification(`"${bookTitle}" added to cart! (${bookPrice})`, 'success');
+    // Redirect to dashboard to view materials
+    showNotification(`Please login to access "${materialTitle}"`, 'info');
     
-    console.log(`Book added to cart: ${bookTitle} - ${bookPrice}`);
+    console.log(`Material requested: ${materialTitle}`);
 }
 
 /**
