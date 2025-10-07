@@ -13,6 +13,7 @@
     display: flex;
     align-items: center;
     gap: var(--spacing-md);
+    margin-left: var(--spacing-md);
 }
 
 .brand-logo {
@@ -285,19 +286,6 @@
     justify-items: center;
 }
 
-@media (max-width: 768px) {
-    .materials-grid {
-        grid-template-columns: repeat(auto-fill, minmax(var(--card-width), 1fr));
-        gap: var(--spacing-md);
-    }
-}
-
-@media (max-width: 480px) {
-    .materials-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
 /* Material Card Styles */
 .material-card {
     display: flex;
@@ -392,21 +380,6 @@
     box-shadow: none;
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-    .material-preview {
-        height: 120px;
-    }
-   
-    .material-thumbnail {
-        object-fit: contain;
-    }
-
-    .material-info h4 {
-        font-size: var(--font-size-base);
-    }
-}
-
 /**
  * Purchase History Section
  */
@@ -465,67 +438,6 @@
     border-bottom: none;
 }
 
-/* Status badges */
-.status-success {
-    background-color: var(--success);
-    color: var(--white);
-    padding: var(--spacing-xs) var(--spacing-sm);
-    border-radius: var(--radius-sm);
-    font-size: var(--font-size-small);
-    font-weight: var(--font-weight-medium);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.status-pending {
-    background-color: var(--accent);
-    color: var(--white);
-    padding: var(--spacing-xs) var(--spacing-sm);
-    border-radius: var(--radius-sm);
-    font-size: var(--font-size-small);
-    font-weight: var(--font-weight-medium);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.status-failed {
-    background-color: var(--error);
-    color: var(--white);
-    padding: var(--spacing-xs) var(--spacing-sm);
-    border-radius: var(--radius-sm);
-    font-size: var(--font-size-small);
-    font-weight: var(--font-weight-medium);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-/* Responsive table */
-@media (max-width: 768px) {
-    .purchases-table {
-        font-size: var(--font-size-small);
-    }
-    
-    .purchases-table th,
-    .purchases-table td {
-        padding: var(--spacing-sm);
-    }
-    
-    .purchases-table th {
-        font-size: var(--font-size-small);
-    }
-}
-
-@media (max-width: 600px) {
-    .purchases-table {
-        display: block;
-        overflow-x: auto;
-        white-space: nowrap;
-    }
-    
-    .purchases-table table {
-        min-width: 600px;
-    }
-}
 
 /**
  * Profile Settings Section
@@ -606,7 +518,6 @@
 }
 
 
-
 /** 
  * Extra Button Styles
  */
@@ -616,28 +527,11 @@
     border-radius: var(--radius-sm);
 }
 
-.btn-info {
-    background-color: var(--secondary);
-    color: var(--text);
-    border: 1px solid var(--border);
-}
-
-.btn-info:hover {
-    background-color: var(--primary);
-    color: var(--white);
-}
-
-.btn-edit {
-    background-color: var(--accent);
-    color: var(--white);
-}
-
-.btn-edit:hover {
-    background-color: var(--primary);
-}
 
 
-/* Responsive Design */
+/**
+ * Responsive Design 
+ */
 @media (max-width: 768px) {
     .dashboard-header {
         flex-direction: column;
@@ -661,6 +555,35 @@
     .filter-select {
         min-width: 100px;
     }
+    
+    .materials-grid {
+        grid-template-columns: repeat(auto-fill, minmax(var(--card-width), 1fr));
+        gap: var(--spacing-md);
+    }
+
+    .material-preview {
+        height: 120px;
+    }
+
+    .material-thumbnail {
+        object-fit: contain;
+    }
+
+    .material-info h4 {
+        font-size: var(--font-size-base);
+    }
+
+    .purchases-table {
+        font-size: var(--font-size-small);
+    }
+
+    .purchases-table th, .purchases-table td {
+        padding: var(--spacing-sm);
+    }
+
+    .purchases-table th {
+        font-size: var(--font-size-small);
+    }
 }
 
 @media (max-width: 600px) {
@@ -680,6 +603,15 @@
 
     .filter-group {
         justify-content: center;
+    }
+
+    .purchases-table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+    .purchases-table table {
+        min-width: 600px;
     }
 }
 
@@ -701,6 +633,10 @@
     .search-btn {
         min-width: 60px;
         padding: var(--spacing-sm);
+    }
+
+    .materials-grid {
+        grid-template-columns: 1fr;
     }
 
     .material-actions {

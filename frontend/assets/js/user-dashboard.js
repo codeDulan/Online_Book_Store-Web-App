@@ -18,13 +18,16 @@ const FACULTY_THUMBNAILS = {
     'dental': 'fods.png',
     'engineering': 'foe.png',
     'graduate studies': 'fogs.png',
-    'humanities social': 'fohss.png',
+    'humanities': 'fohss.png',
+    'social': 'fohs.png',
+    'it': 'foit.png',
     'information': 'foit.png',
+    'veterinary': 'fovmas.png',
+    'animal': 'fovmas.png',
     'medicine': 'fom.png',
-    'management finance commerce': 'fomfc.png',
+    'management': 'fomfc.png',
     'science': 'fos.png',
     'technology': 'fot.png',
-    'veterinary animal': 'fovmas.png',
     'default': 'default.png'
 };
 
@@ -120,6 +123,7 @@ function displayUserLibrary(purchases) {
     const libraryContainer = document.getElementById('userLibrary');
 
     if (purchases.length === 0) {
+        libraryContainer.style.display = 'flex';
         libraryContainer.innerHTML = `
             <div class="materials-placeholder">
                 <div class="placeholder-text" id="empty-user-library">You haven't purchased any materials yet.</div>
@@ -169,7 +173,6 @@ async function loadBrowseMaterials() {
     }
 }
 
-
 /**
  * Display materials for browsing
  * @param {Array} materials - Array of material objects
@@ -178,6 +181,7 @@ function displayBrowseMaterials(materials) {
     const browseContainer = document.getElementById('browseMaterials');
 
     if (materials.length === 0) {
+        browseContainer.style.display = 'flex';
         browseContainer.innerHTML = `
             <div class="materials-placeholder">
                 <div class="placeholder-text" id="empty-browse-materials">No Materials Available.</div>
@@ -261,9 +265,21 @@ async function loadPurchaseHistory() {
             displayPurchaseHistory(purchases);
         } else {
             console.error('Failed to load purchase history');
+            const historyContainer = document.getElementById('purchaseHistory');
+            historyContainer.innerHTML = `
+                <div class="content-placeholder">
+                    <div class="placeholder-text">Error loading purchase history. Please try again.</div>
+                </div>
+            `;
         }
     } catch (error) {
         console.error('Error loading purchase history:', error);
+        const historyContainer = document.getElementById('purchaseHistory');
+        historyContainer.innerHTML = `
+            <div class="content-placeholder">
+                <div class="placeholder-text">Error loading purchase history. Please try again.</div>
+            </div>
+        `;
     }
 }
 
@@ -278,7 +294,6 @@ function displayPurchaseHistory(purchases) {
         historyContainer.innerHTML = `
             <div class="content-placeholder">
                 <div class="placeholder-text" id="empty-purchase-history">No Purchase History.</div>
-                <p>You haven't made any purchases yet.</p>
             </div>
         `;
         return;
@@ -357,7 +372,7 @@ function displayUserProfile(profileData) {
             </div>
             <div class="profile-field">
                 <label><strong>Role:</strong></label>
-                <span>${profileData.role === 'ROLE_USER' ? 'User' : profileData.role}</span>
+                <span>${profileData.role === 'ROLE_USER' ? 'User' : 'Admin'}</span>
             </div>
         </div>
     `;
@@ -1288,7 +1303,8 @@ function renderMainDashboard() {
 
 function navigateBack() {
     // Go back in browser history
-    window.history.back();
+    // window.history.back();
+    renderMainDashboard();
 }
 
 /**
@@ -1298,8 +1314,8 @@ window.addEventListener('popstate', function (event) {
     if (event.state && event.state.view === 'purchase-history') {
         // User went forward to purchase history
         navigateToPurchaseHistory();
-    } if (event.state && event.state.view === 'profile') {
-        // Uesr went forward to profile view
+    } else if (event.state && event.state.view === 'profile') {
+        // User went forward to profile view
         navigateToProfileView();
     } else {
         // User went back to main dashboard

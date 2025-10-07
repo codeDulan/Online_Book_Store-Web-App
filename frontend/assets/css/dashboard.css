@@ -5,6 +5,7 @@
     display: flex;
     align-items: center;
     gap: var(--spacing-md);
+    margin-left: var(--spacing-md);
 }
 
 .brand-logo {
@@ -322,6 +323,147 @@
 }
 
 /**
+ * Window for Profile, Users and Purchases
+ */
+.dashboard-section {
+    background-color: var(--background);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-lg);
+    box-shadow: var(--shadow-sm);
+    margin-bottom: var(--spacing-xs);
+}
+
+.section-header {
+    border-bottom: 1px solid var(--border);
+    padding-bottom: var(--spacing-xs);
+    margin-bottom: var(--spacing-sm);
+}
+
+.section-header h3 {
+    margin-bottom: var(--spacing-xs);
+}
+
+.section-header p {
+    color: var(--gray);
+    margin: 0;
+}
+
+/**
+ * Profile Settings Section
+ */
+.profile-header-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.btn-back:hover {
+    background-color: var(--accent);
+    color: var(--white);
+    box-shadow: var(--shadow-md);
+
+}
+
+.profile-content {
+    background-color: var(--white);
+    border-radius: var(--radius-sm);
+    padding: var(--spacing-lg);
+    border: 1px solid var(--border);
+}
+
+.profile-section h4 {
+    color: var(--text);
+    padding-bottom: var(--spacing-xs);
+    border-bottom: 1px solid var(--border);
+    margin-bottom: var(--spacing-sm);
+}
+
+.profile-field {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-sm) 0;
+    border-bottom: 1px solid var(--light-gray);
+}
+
+.profile-field:last-child {
+    border-bottom: none;
+}
+
+.profile-field label {
+    color: var(--gray);
+    font-size: var(--font-size-base);
+}
+
+.profile-field span {
+    color: var(--text);
+    font-weight: var(--font-weight-medium);
+}
+/**
+ * Purchases Section
+ */
+.purchase-history-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.purchases-table {
+    width: 100%;
+    overflow-x: auto;
+    border-radius: var(--radius-sm);
+    background-color: var(--white);
+    border: 1px solid var(--border);
+}
+
+.purchases-table table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--font-size-base);
+}
+
+.purchases-table thead {
+    background-color: var(--primary);
+    color: var(--white);
+}
+
+.purchases-table th {
+    padding: var(--spacing-md);
+    text-align: left;
+    font-weight: var(--font-weight-semibold);
+    border-bottom: 2px solid var(--border);
+    white-space: nowrap;
+}
+
+.purchases-table tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background-color var(--transition-fast);
+}
+
+.purchases-table tbody tr:hover {
+    background-color: #f5f5f56e;
+}
+
+/* .purchases-table tbody tr:nth-child(even) {
+    background-color: var(--CatCol);
+} */
+
+.purchases-table td {
+    padding: var(--spacing-md);
+    vertical-align: middle;
+}
+
+.purchases-table tbody tr:last-child {
+    border-bottom: none;
+}
+
+/**
+ * Users Section
+ * Note: Users list reuses .purchases-table styles defined in Purchases Section
+ */
+
+
+/**
  * Dashboard Footer
  */
 .footer-content {
@@ -375,6 +517,20 @@
     #search-bar {
         min-width: unset;
     }
+
+    /* Purchases Table Responsive */
+    .purchases-table {
+        font-size: var(--font-size-small);
+    }
+    
+    .purchases-table th,
+    .purchases-table td {
+        padding: var(--spacing-sm);
+    }
+    
+    .purchases-table th {
+        font-size: var(--font-size-small);
+    }
 }
 
 @media (max-width: 480px) {
@@ -425,13 +581,15 @@
 }
 
 @media (max-width: 600px) {
-    .materials-table {
+    .materials-table,
+    .purchases-table {
         display: block;
         overflow-x: auto;
         white-space: nowrap;
     }
     
-    .materials-table table {
+    .materials-table table,
+    .purchases-table table {
         min-width: 800px;
     }
     

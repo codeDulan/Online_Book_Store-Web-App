@@ -33,10 +33,13 @@
             </div>
         </div>
     </header>
-
     <!-- Main Dashboard Content -->
     <main class="main">
-        <div class="container">
+        <div class="container" id="mainWindow">
+            <!-- Profile section will be loaded here by JavaScript -->
+            <!-- Users section will be loaded here by JavaScript -->
+            <!-- Purchase history section will be loaded here by JavaScript -->
+
             <!-- Dashboard Header -->
             <div class="dashboard-header">
                 <div class="dashboard-actions">
@@ -55,7 +58,7 @@
                 <div class="materials-container" id="materialsContainer">
                     <div class="loading-message" id="loadingMessage">Loading materials...</div>
                     <div class="error-message hidden" id="errorMessage">Failed to load materials. Please try again.</div>
-                    
+
                     <!-- Materials List -->
                     <div class="materials-list hidden" id="materialsList">
                         <!-- Materials will be populated by JavaScript -->
@@ -78,7 +81,7 @@
     <div class="modal-overlay" id="materialModal">
         <div class="modal-container">
             <button class="modal-close" id="modalClose">&times;</button>
-            
+
             <!-- Left Section - PDF Preview -->
             <div class="modal-left">
                 <div class="pdf-preview" id="pdfPreview">
@@ -90,7 +93,7 @@
                     </button>
                 </div>
             </div>
-            
+
             <!-- Right Section - Details -->
             <div class="modal-right">
                 <div class="material-header">
@@ -101,11 +104,11 @@
                         <!-- Price will be populated -->
                     </div>
                 </div>
-                
+
                 <div class="material-details" id="materialDetailsContainer">
                     <!-- Details will be populated -->
                 </div>
-                
+
                 <div class="modal-actions" id="modalActions">
                     <!-- Action buttons will be populated -->
                 </div>
@@ -117,18 +120,18 @@
     <div class="modal-overlay" id="addMaterialModal">
         <div class="modal-container add-modal-container">
             <button class="modal-close" id="addModalClose">&times;</button>
-            
+
             <!-- Add Material Form -->
             <div class="add-material-form">
                 <div class="form-header">
                     <h2>Add New Material</h2>
                     <p>Fill in the details to add a new learning material</p>
                 </div>
-                
+
                 <div class="form-content" id="addMaterialFormContent">
                     <!-- Form fields will be populated by JavaScript -->
                 </div>
-                
+
                 <div class="form-actions">
                     <button class="btn btn-cancel" id="clearBtn">
                         Clear
