@@ -45,6 +45,7 @@ function initializeUserDashboard() {
     initializeUserMenu();    
     loadUserLibrary();
     loadBrowseMaterials();
+    populateSelectOptions();
 
     console.log('User dashboard initialized');
 }
@@ -163,7 +164,7 @@ async function loadBrowseMaterials() {
             console.log("Browse materials:", materials); // Debug log
             // materials.sort((a, b) => b.id - a.id); // Sort materials by ID in descending order
             displayBrowseMaterials(materials);
-            populateSelectOptions();
+            // populateSelectOptions();
         } else {
             console.error('Failed to load browse materials');
         }
@@ -646,11 +647,20 @@ function showPaymentModal(material) {
 
 function hidePaymentModal() {
     const modal = document.getElementById('paymentModal');
+    // Hide modal
     modal.style.display = 'none';
     
-    // Clean up Stripe elements
+    // Clean up Stripe elements safely
     if (elements) {
-        elements.destroy();
+        try {
+            // Check if elements still has the destroy method before calling it
+            if (typeof elements.destroy === 'function') {
+                elements.destroy();
+            }
+        } catch (error) {
+            // Elements already cleaned up, ignore error
+            console.log('Payment modal cleaned up');
+        }
         elements = null;
     }
     
@@ -709,16 +719,20 @@ async function handlePaymentSubmit() {
             try {
                 await confirmPayment(paymentIntent.id);
                 
-                // Success!
+                // Success! Clean up modal properly
                 hidePaymentModal();
+
+                // Show success message
                 alert('Payment successful! Material purchased.');
-                
-                // Refresh the page to show updated purchase status
-                window.location.reload();
+
+                // Reload data to show updated purchase status
+                loadUserLibrary();
+                loadBrowseMaterials();
                 
             } catch (confirmError) {
                 console.error('Error confirming payment:', confirmError);
                 showPaymentError('Payment processed but confirmation failed. Please contact support.');
+                setPaymentLoading(false);
             }
         } else {
             showPaymentError('Payment was not completed. Please try again.');

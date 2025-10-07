@@ -935,6 +935,14 @@ async function authenticatedFetch(url, options = {}) {
         return null;
     }
 
+    // Handle 403 Forbidden (insufficient permissions)
+    if (response.status === 403) {
+        alert('Access denied. Admin privileges required.');
+        clearAuthData();
+        window.location.href = '../login.html';
+        return null;
+    }
+
     return response;
 }
 
